@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Copy, Edit, Trash2, Save, Clock, Check } from 'lucide-react';
+import { X, Copy, Edit, Trash2, Save, Clock, Check, Plus } from 'lucide-react';
 import { DailyTask, Project, Task } from '../types';
 import { databaseService } from '../services/database';
+import { v4 as uuidv4 } from 'uuid';
 
 interface TaskDetailModalProps {
     dailyTask: DailyTask | null;
@@ -17,8 +18,12 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     onUpdate
 }) => {
     const [editing, setEditing] = useState(false);
+    const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
     const [editedProjects, setEditedProjects] = useState<Project[]>([]);
     const [editedTasks, setEditedTasks] = useState<Task[]>([]);
+    const [newTaskInputs, setNewTaskInputs] = useState<{ [projectId: string]: string }>({});
+    const [showNewSectionInput, setShowNewSectionInput] = useState(false);
+    const [newSectionName, setNewSectionName] = useState('');
 
     React.useEffect(() => {
         if (dailyTask) {
@@ -140,6 +145,53 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         );
     };
 
+    const handleEditProject = (project: Project) => {
+        if (editingProjectId === project.id) {
+            setEditingProjectId(null);
+        } else {
+            setEditingProjectId(project.id);
+        }
+    };
+
+    const addNewSection = async () => {
+        if (!newSectionName.trim()) return;
+
+        const newProject: Project = {
+            id: uuidv4(),
+            name: newSectionName.trim()
+        };
+
+        try {
+            await databaseService.saveProject(newProject);
+            setEditedProjects([...editedProjects, newProject]);
+            setNewSectionName('');
+            setShowNewSectionInput(false);
+        } catch (error) {
+            console.error('Failed to add new section:', error);
+        }
+    };
+
+    const addNewTask = async (projectId: string) => {
+        const taskDescription = newTaskInputs[projectId];
+        if (!taskDescription?.trim()) return;
+
+        const newTask: Task = {
+            id: uuidv4(),
+            description: taskDescription.trim(),
+            projectId,
+            date: dailyTask?.date || '',
+            completed: false
+        };
+
+        try {
+            await databaseService.saveTask(newTask);
+            setEditedTasks([...editedTasks, newTask]);
+            setNewTaskInputs(prev => ({ ...prev, [projectId]: '' }));
+        } catch (error) {
+            console.error('Failed to add new task:', error);
+        }
+    };
+
     if (!isOpen || !dailyTask) return null;
 
     return (
@@ -164,6 +216,50 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 </div>
 
                 <div className="modal-content">
+                    {/* Add New Section */}
+                    <div className="add-section-container">
+                        {!showNewSectionInput ? (
+                            <button
+                                className="add-section-btn"
+                                onClick={() => setShowNewSectionInput(true)}
+                            >
+                                <Plus size={16} />
+                                Add New Section
+                            </button>
+                        ) : (
+                            <div className="new-section-input">
+                                <input
+                                    type="text"
+                                    placeholder="Enter section name"
+                                    value={newSectionName}
+                                    onChange={(e) => setNewSectionName(e.target.value)}
+                                    className="form-input"
+                                    onKeyPress={(e) => {
+                                        if (e.key === 'Enter') {
+                                            addNewSection();
+                                        }
+                                    }}
+                                />
+                                <button
+                                    className="add-button"
+                                    onClick={addNewSection}
+                                    disabled={!newSectionName.trim()}
+                                >
+                                    <Plus size={16} />
+                                </button>
+                                <button
+                                    className="cancel-button"
+                                    onClick={() => {
+                                        setShowNewSectionInput(false);
+                                        setNewSectionName('');
+                                    }}
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
                     {editedProjects.map(project => {
                         const projectTasks = editedTasks.filter(task => task.projectId === project.id);
                         return (
@@ -173,20 +269,18 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                     <div className="project-header-actions">
                                         <button
                                             className="icon-button"
-                                            onClick={() => setEditing(!editing)}
-                                            title={editing ? 'Cancel editing' : 'Edit'}
+                                            onClick={() => handleEditProject(project)}
+                                            title={editingProjectId === project.id ? 'Cancel editing' : 'Edit project'}
                                         >
-                                            {editing ? <X size={16} /> : <Edit size={16} />}
+                                            {editingProjectId === project.id ? <X size={16} /> : <Edit size={16} />}
                                         </button>
-                                        {editing && (
-                                            <button
-                                                className="delete-button"
-                                                onClick={() => handleDeleteProject(project.id)}
-                                                title="Delete project"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        )}
+                                        <button
+                                            className="delete-button"
+                                            onClick={() => handleDeleteProject(project.id)}
+                                            title="Delete project"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
                                     </div>
                                 </div>
 
@@ -198,7 +292,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                             placeholder="Hours spent"
                                             value={project.hoursSpent || ''}
                                             onChange={(e) => updateProjectHours(project.id, parseFloat(e.target.value) || 0)}
-                                            className="form-input small"
+                                            className="form-input hours-input-field"
                                             disabled={!editing}
                                         />
                                     </div>
@@ -230,7 +324,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                                     onClick={() => updateTaskCompletion(task.id, !task.completed)}
                                                     title={task.completed ? 'Mark as incomplete' : 'Mark as complete'}
                                                 >
-                                                    {task.completed && <Check size={12} />}
+                                                    {task.completed && <Check size={14} strokeWidth={3} />}
                                                 </button>
                                                 {editing ? (
                                                     <input
@@ -256,6 +350,29 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                             )}
                                         </div>
                                     ))}
+
+                                    {/* Add New Task */}
+                                    <div className="add-task-container">
+                                        <input
+                                            type="text"
+                                            placeholder="Add new task..."
+                                            value={newTaskInputs[project.id] || ''}
+                                            onChange={(e) => setNewTaskInputs(prev => ({ ...prev, [project.id]: e.target.value }))}
+                                            className="form-input"
+                                            onKeyPress={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    addNewTask(project.id);
+                                                }
+                                            }}
+                                        />
+                                        <button
+                                            className="add-button"
+                                            onClick={() => addNewTask(project.id)}
+                                            disabled={!newTaskInputs[project.id]?.trim()}
+                                        >
+                                            <Plus size={16} />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         );

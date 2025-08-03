@@ -143,11 +143,38 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .icon-button:hover {
   background-color: var(--bg-tertiary);
   color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.icon-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.icon-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background-color: rgba(59, 130, 246, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.icon-button:active::before {
+  width: 100px;
+  height: 100px;
 }
 
 /* Main content */
@@ -903,17 +930,19 @@ body {
   height: 18px;
   border: 2px solid var(--border-color);
   border-radius: var(--radius-sm);
-  background: none;
+  background-color: var(--bg-card);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  color: var(--text-primary);
 }
 
 .task-checkbox:hover {
   border-color: var(--primary-color);
+  background-color: var(--bg-tertiary);
 }
 
 .task-checkbox.completed {
@@ -1077,9 +1106,112 @@ body {
   margin-bottom: var(--spacing-md);
 }
 
+.hours-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.hours-input {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--text-secondary);
+}
+
+.hours-input-field {
+  width: 120px;
+  min-width: 120px;
+}
+
+.project-action-buttons {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.edit-project-btn,
+.delete-project-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-project-btn {
+  color: var(--primary-color);
+}
+
+.edit-project-btn:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.delete-project-btn {
+  color: var(--danger-color);
+}
+
+.delete-project-btn:hover {
+  background-color: var(--danger-color);
+  color: white;
+}
+
 .copy-buttons {
   display: flex;
   gap: var(--spacing-sm);
+}
+
+/* Add Section and Task Styles */
+.add-section-container {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-tertiary);
+}
+
+.add-section-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  width: 100%;
+  justify-content: center;
+}
+
+.add-section-btn:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.new-section-input {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.add-task-container {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-card);
 }
 
 .hours-input {
@@ -1098,12 +1230,39 @@ body {
   cursor: pointer;
   font-size: 0.75rem;
   transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .copy-button:hover {
   background-color: var(--primary-color);
   color: white;
   border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.copy-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.copy-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.copy-button:active::before {
+  width: 100px;
+  height: 100px;
 }
 
 /* Projects list */
@@ -1431,6 +1590,21 @@ body {
     gap: var(--spacing-sm);
   }
 
+  .hours-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .hours-input-field {
+    width: 80px;
+    min-width: 80px;
+  }
+
+  .project-action-buttons {
+    align-self: flex-end;
+  }
+
   .copy-buttons {
     justify-content: flex-start;
   }
@@ -1440,8 +1614,27 @@ body {
   }
 
   .task-checkbox {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
+  }
+
+  .add-section-container {
+    padding: var(--spacing-sm);
+  }
+
+  .add-section-btn {
+    font-size: 0.8rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .new-section-input {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .add-task-container {
+    flex-direction: column;
+    gap: var(--spacing-xs);
   }
 
   .summary-stats {
