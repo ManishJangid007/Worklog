@@ -1618,6 +1618,17 @@ body {
   cursor: default;
 }
 
+.calendar-day.disabled {
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.calendar-day.disabled:hover {
+  background-color: transparent;
+  color: var(--text-secondary);
+}
+
 /* Clear Filter Button */
 .clear-filter-btn {
   background: none;
