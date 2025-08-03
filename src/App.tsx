@@ -206,6 +206,7 @@ function App() {
                     isOpen={showSummaryModal}
                     onClose={() => setShowSummaryModal(false)}
                     dateFilter={dateFilter}
+                    onDateFilterChange={handleDateFilter}
                 />
             </div>
         </ThemeProvider>

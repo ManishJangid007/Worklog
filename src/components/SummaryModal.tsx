@@ -11,9 +11,10 @@ interface SummaryModalProps {
     isOpen: boolean;
     onClose: () => void;
     dateFilter: string;
+    onDateFilterChange?: (filter: string) => void;
 }
 
-const SummaryModal: React.FC<SummaryModalProps> = ({ isOpen, onClose, dateFilter }) => {
+const SummaryModal: React.FC<SummaryModalProps> = ({ isOpen, onClose, dateFilter, onDateFilterChange }) => {
     const [dailyTasks, setDailyTasks] = useState<DailyTask[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -121,14 +122,26 @@ const SummaryModal: React.FC<SummaryModalProps> = ({ isOpen, onClose, dateFilter
                 <div className="modal-header">
                     <div className="modal-header-left">
                         <h2>Summary</h2>
-                        <div className="filter-info">
-                            <Calendar size={16} />
-                            <span>{getFilterLabel()}</span>
-                        </div>
                     </div>
-                    <button className="close-button" onClick={onClose}>
-                        <X size={20} />
-                    </button>
+                    <div className="modal-header-right">
+                        {onDateFilterChange && (
+                            <div className="summary-date-filter">
+                                <select
+                                    value={dateFilter}
+                                    onChange={(e) => onDateFilterChange(e.target.value)}
+                                    className="filter-select"
+                                >
+                                    <option value="all">All Time</option>
+                                    <option value="ytd">Year to Date</option>
+                                    <option value="mtd">Month to Date</option>
+                                    <option value="wtd">Week to Date</option>
+                                </select>
+                            </div>
+                        )}
+                        <button className="close-button" onClick={onClose}>
+                            <X size={20} />
+                        </button>
+                    </div>
                 </div>
 
                 <div className="modal-content">

@@ -1462,6 +1462,29 @@ body {
   font-size: 0.875rem;
 }
 
+.summary-date-filter {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.summary-date-filter .filter-select {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.summary-date-filter .filter-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-color-alpha);
+}
+
 .summary-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -1736,6 +1759,15 @@ body {
   .add-task-container {
     flex-direction: column;
     gap: var(--spacing-xs);
+  }
+
+  .summary-date-filter {
+    margin-right: var(--spacing-sm);
+  }
+
+  .summary-date-filter .filter-select {
+    font-size: 0.8rem;
+    padding: var(--spacing-xs);
   }
 
   .summary-stats {
