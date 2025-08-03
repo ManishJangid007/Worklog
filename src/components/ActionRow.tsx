@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Filter, BarChart3, Calendar } from 'lucide-react';
+import { Plus, Filter, BarChart3, Calendar, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 interface ActionRowProps {
     onAddTask: () => void;
@@ -8,6 +8,7 @@ interface ActionRowProps {
     onSummary: () => void;
     onDateFilter: (filter: 'all' | 'ytd' | 'mtd' | 'wtd' | 'custom') => void;
     currentFilter: string;
+    sortOrder: 'asc' | 'desc';
 }
 
 const ActionRow: React.FC<ActionRowProps> = ({
@@ -16,7 +17,8 @@ const ActionRow: React.FC<ActionRowProps> = ({
     onSort,
     onSummary,
     onDateFilter,
-    currentFilter
+    currentFilter,
+    sortOrder
 }) => {
     const handleFilterChange = (filter: 'all' | 'ytd' | 'mtd' | 'wtd' | 'custom') => {
         onDateFilter(filter);
@@ -34,8 +36,14 @@ const ActionRow: React.FC<ActionRowProps> = ({
                     Project / Section
                 </button>
                 <button className="action-button secondary" onClick={onSort}>
-                    <Filter size={16} />
-                    Sort
+                    {sortOrder === 'asc' ? (
+                        <ArrowUp size={16} />
+                    ) : sortOrder === 'desc' ? (
+                        <ArrowDown size={16} />
+                    ) : (
+                        <ArrowUpDown size={16} />
+                    )}
+                    Sort {sortOrder === 'asc' ? '(Oldest First)' : '(Newest First)'}
                 </button>
                 <button className="action-button secondary" onClick={onSummary}>
                     <BarChart3 size={16} />

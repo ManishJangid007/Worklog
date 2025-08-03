@@ -157,6 +157,7 @@ function App() {
                         onSummary={handleSummary}
                         onDateFilter={handleDateFilter}
                         currentFilter={dateFilter}
+                        sortOrder={sortOrder}
                     />
 
                     <div className="tasks-container">
