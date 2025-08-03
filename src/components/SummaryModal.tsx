@@ -79,6 +79,11 @@ const SummaryModal: React.FC<SummaryModalProps> = ({
     useEffect(() => {
         if (isOpen) {
             loadData();
+        } else {
+            // Reset filters when modal closes
+            setSummaryDateFilter('all');
+            setSummaryCustomDateRange(null);
+            setShowSummaryCustomDatePicker(false);
         }
     }, [isOpen, loadData]);
 
