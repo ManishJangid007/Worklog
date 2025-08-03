@@ -346,20 +346,20 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                         onClick={() => setShowSectionDropdown(true)}
                                     >
                                         <Plus size={16} />
-                                        Choose Section
+                                        Choose Project
                                     </button>
                                     <button
                                         className="add-section-btn custom"
                                         onClick={() => setShowNewSectionInput(true)}
                                     >
                                         <Plus size={16} />
-                                        Custom Section
+                                        Custom Project
                                     </button>
                                 </div>
                             ) : showSectionDropdown ? (
                                 <div className="section-dropdown">
                                     <div className="dropdown-header">
-                                        <h4>Choose a section</h4>
+                                        <h4>Choose a project</h4>
                                         <button
                                             className="close-button"
                                             onClick={() => setShowSectionDropdown(false)}
@@ -395,7 +395,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                 <div className="new-section-input">
                                     <input
                                         type="text"
-                                        placeholder="Enter custom section name"
+                                        placeholder="Enter custom project name"
                                         value={newSectionName}
                                         onChange={(e) => setNewSectionName(e.target.value)}
                                         className="form-input"
@@ -512,12 +512,12 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                         </div>
                                     ))}
 
-                                    {/* Add New Task - Only in Edit Mode */}
+                                    {/* Add New Entry - Only in Edit Mode */}
                                     {editing && (
                                         <div className="add-task-container">
                                             <input
                                                 type="text"
-                                                placeholder="Add new task..."
+                                                placeholder="Add new entry..."
                                                 value={newTaskInputs[project.id] || ''}
                                                 onChange={(e) => setNewTaskInputs(prev => ({ ...prev, [project.id]: e.target.value }))}
                                                 className="form-input"

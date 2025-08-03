@@ -1,11 +1,11 @@
-# Task Organizer
+# Worklog
 
-A modern Progressive Web App (PWA) for organizing and tracking daily tasks with project management and time tracking features.
+A modern Progressive Web App (PWA) for organizing and tracking daily work entries with project management and time tracking features.
 
 ## Features
 
 ### Core Functionality
-- **Daily Task Management**: Add tasks for specific dates with project organization
+- **Daily Worklog Management**: Add work entries for specific dates with project organization
 - **Project Management**: Create and manage projects/sections for tasks
 - **Time Tracking**: Track hours spent on each project for summary reports
 - **Copy Functionality**: Copy tasks in various formats for sharing on Teams
@@ -65,13 +65,13 @@ This creates a `build` folder with the optimized production files.
 
 ## Usage
 
-### Adding Tasks
+### Adding Work Entries
 
-1. Click the "Add Task" button in the action row
+1. Click the "Add Entry" button in the action row
 2. Select a date (defaults to current date)
 3. Choose an existing project or create a new one
-4. Add multiple tasks under the selected project
-5. Click "Save Tasks" to create the daily task entry
+4. Add multiple work entries under the selected project
+5. Click "Save Entries" to create the daily worklog entry
 
 ### Managing Projects
 

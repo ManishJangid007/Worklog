@@ -1,5 +1,5 @@
 
-# Task Organizer Web App Specification
+# Worklog Web App Specification
 
 ## Problem
 Currently, our organization logs daily tasks in a notepad and shares them on Teams chat in this format:

@@ -163,7 +163,7 @@ function App() {
             <div className="app">
                 <div className="loading-screen">
                     <div className="loading-spinner"></div>
-                    <p>Loading Task Organizer...</p>
+                    <p>Loading Worklog...</p>
                 </div>
             </div>
         );
@@ -196,9 +196,9 @@ function App() {
                         {filteredTasks.length === 0 ? (
                             <div className="empty-state">
                                 <h2>No tasks found</h2>
-                                <p>Start by adding your first task to get organized!</p>
+                                <p>Start by adding your first worklog entry to get organized!</p>
                                 <button className="button primary" onClick={handleAddTask}>
-                                    Add Your First Task
+                                    Add Your First Entry
                                 </button>
                             </div>
                         ) : (

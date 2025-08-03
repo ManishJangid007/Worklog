@@ -33,7 +33,7 @@ const ActionRow: React.FC<ActionRowProps> = ({
             <div className="action-buttons">
                 <button className="action-button primary" onClick={onAddTask}>
                     <Plus size={16} />
-                    Add Task
+                    Add Entry
                 </button>
                 <button className="action-button secondary" onClick={onAddProject}>
                     <Plus size={16} />

@@ -284,7 +284,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
         <div className="modal-overlay">
             <div className="modal add-task-modal">
                 <div className="modal-header">
-                    <h2>Add Tasks</h2>
+                                            <h2>Add Entries</h2>
                     <button className="close-button" onClick={() => {
                         resetForm();
                         onClose();
@@ -361,7 +361,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
 
                     {/* Project Selection */}
                     <div className="form-group">
-                        <label className="form-label">Add Projects</label>
+                        <label className="form-label">Add Projects/Sections</label>
                         <div className="project-selector">
                             <select
                                 className="form-select"
@@ -376,7 +376,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
                                 }}
                                 value=""
                             >
-                                <option value="">Select a project to add</option>
+                                <option value="">Select a project/section to add</option>
                                 {projects.map(project => (
                                     <option key={project.id} value={project.id}>
                                         {project.name}

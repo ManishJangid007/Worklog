@@ -120,6 +120,12 @@ body {
   margin: 0 auto;
 }
 
+.app-title-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .app-title {
   margin: 0;
   font-size: 1.5rem;
