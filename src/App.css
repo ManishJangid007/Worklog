@@ -2432,9 +2432,12 @@ body {
   font-size: 0.8rem;
 }
 
-.tasks-grid {
-  grid-template-columns: 1fr;
-  gap: var(--spacing-sm);
+/* Mobile-specific styles - only apply to small screens */
+@media (max-width: 767px) {
+  .tasks-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
 }
 
 .task-card {

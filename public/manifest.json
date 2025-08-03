@@ -38,10 +38,13 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#3b82f6",
-  "background_color": "#1f2937",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
   "orientation": "portrait-primary",
-  "categories": ["productivity", "business"],
+  "categories": [
+    "productivity",
+    "business"
+  ],
   "lang": "en",
   "scope": "/",
   "prefer_related_applications": false,

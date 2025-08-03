@@ -8,16 +8,57 @@
   <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png" />
   <link rel="apple-touch-icon" href="%PUBLIC_URL%/apple-touch-icon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#3b82f6" />
+  <meta name="theme-color" content="#ffffff" id="theme-color" />
   <meta name="description"
     content="A modern web app for organizing and tracking daily work entries with project management and time tracking features." />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Worklog" />
-  <meta name="msapplication-TileColor" content="#3b82f6" />
+  <meta name="msapplication-TileColor" content="#ffffff" />
   <meta name="msapplication-TileImage" content="%PUBLIC_URL%/android-chrome-192x192.png" />
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
   <title>Worklog</title>
+  <style>
+    /* Theme-aware status bar for PWA */
+    @media (display-mode: standalone) {
+      body {
+        padding-top: env(safe-area-inset-top);
+      }
+    }
+  </style>
+  <script>
+    // Dynamic theme color update for PWA
+    function updateThemeColor() {
+      const themeColorMeta = document.getElementById('theme-color');
+      const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+
+      if (isDarkMode) {
+        themeColorMeta.setAttribute('content', '#1f2937');
+      } else {
+        themeColorMeta.setAttribute('content', '#ffffff');
+      }
+    }
+
+    // Update theme color on page load
+    document.addEventListener('DOMContentLoaded', updateThemeColor);
+
+    // Watch for theme changes
+    const observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+          updateThemeColor();
+        }
+      });
+    });
+
+    // Start observing when DOM is ready
+    document.addEventListener('DOMContentLoaded', function () {
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme']
+      });
+    });
+  </script>
 </head>
 
 <body>
