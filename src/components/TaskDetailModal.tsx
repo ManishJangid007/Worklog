@@ -18,7 +18,6 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     onUpdate
 }) => {
     const [editing, setEditing] = useState(false);
-    const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
     const [editedProjects, setEditedProjects] = useState<Project[]>([]);
     const [editedTasks, setEditedTasks] = useState<Task[]>([]);
     const [newTaskInputs, setNewTaskInputs] = useState<{ [projectId: string]: string }>({});
