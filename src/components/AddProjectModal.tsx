@@ -16,9 +16,18 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onPr
     const [editingProject, setEditingProject] = useState<Project | null>(null);
     const [editName, setEditName] = useState('');
 
+    const resetForm = () => {
+        setNewProjectName('');
+        setEditingProject(null);
+        setEditName('');
+    };
+
     useEffect(() => {
         if (isOpen) {
             loadProjects();
+        } else {
+            // Reset form when modal closes
+            resetForm();
         }
     }, [isOpen]);
 
@@ -90,19 +99,22 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onPr
         <div className="modal-overlay">
             <div className="modal">
                 <div className="modal-header">
-                    <h2>Manage Projects</h2>
-                    <button className="close-button" onClick={onClose}>
+                    <h2>Manage Projects / Sections</h2>
+                    <button className="close-button" onClick={() => {
+                        resetForm();
+                        onClose();
+                    }}>
                         <X size={20} />
                     </button>
                 </div>
 
                 <div className="modal-content">
                     <div className="form-group">
-                        <label>Add New Project</label>
+                        <label>Add New Project / Section</label>
                         <div className="project-input">
                             <input
                                 type="text"
-                                placeholder="Enter project name"
+                                placeholder="Enter project or section name"
                                 value={newProjectName}
                                 onChange={(e) => setNewProjectName(e.target.value)}
                                 className="form-input"
@@ -123,9 +135,9 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onPr
                     </div>
 
                     <div className="projects-list">
-                        <h3>Existing Projects ({projects.length})</h3>
+                        <h3>Existing Projects / Sections ({projects.length})</h3>
                         {projects.length === 0 ? (
-                            <p className="no-projects">No projects created yet. Add your first project above.</p>
+                            <p className="no-projects">No projects or sections created yet. Add your first one above.</p>
                         ) : (
                             projects.map(project => (
                                 <div key={project.id} className="project-item">
@@ -184,7 +196,10 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onPr
                 </div>
 
                 <div className="modal-footer">
-                    <button className="button secondary" onClick={onClose}>
+                    <button className="button secondary" onClick={() => {
+                        resetForm();
+                        onClose();
+                    }}>
                         Close
                     </button>
                 </div>

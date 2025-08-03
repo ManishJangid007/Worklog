@@ -31,7 +31,7 @@ const ActionRow: React.FC<ActionRowProps> = ({
                 </button>
                 <button className="action-button secondary" onClick={onAddProject}>
                     <Plus size={16} />
-                    Add Project
+                    Project / Section
                 </button>
                 <button className="action-button secondary" onClick={onSort}>
                     <Filter size={16} />

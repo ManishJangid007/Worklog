@@ -127,6 +127,21 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
 
         if (allTasks.length === 0) return;
 
+        // Check for existing tasks on the same date
+        const existingTasks = await databaseService.getTasksByDate(selectedDate.toISOString().split('T')[0]);
+
+        if (existingTasks.length > 0) {
+            const existingTaskNames = existingTasks.map(task => task.description.toLowerCase());
+            const newTaskNames = allTasks.map(task => task.description.toLowerCase());
+
+            const duplicates = newTaskNames.filter(name => existingTaskNames.includes(name));
+
+            if (duplicates.length > 0) {
+                alert(`Tasks already exist for this date: ${duplicates.join(', ')}. Please modify existing tasks instead.`);
+                return;
+            }
+        }
+
         const dailyTask: DailyTask = {
             id: uuidv4(),
             date: selectedDate.toISOString().split('T')[0],
