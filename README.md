@@ -2,6 +2,11 @@
 
 A modern Progressive Web App (PWA) for organizing and tracking daily work entries with project management and time tracking features.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![React](https://img.shields.io/badge/React-18.0-blue.svg)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-4.9-blue.svg)](https://www.typescriptlang.org/)
+[![PWA](https://img.shields.io/badge/PWA-Ready-green.svg)](https://web.dev/progressive-web-apps/)
+
 ## Features
 
 ### Core Functionality
@@ -9,6 +14,7 @@ A modern Progressive Web App (PWA) for organizing and tracking daily work entrie
 - **Project Management**: Create and manage projects/sections for tasks
 - **Time Tracking**: Track hours spent on each project for summary reports
 - **Copy Functionality**: Copy tasks in various formats for sharing on Teams
+- **Custom Icons**: Beautiful worklog icons with theme-aware variants
 
 ### User Interface
 - **Modern Design**: Clean, responsive interface with dark/light theme support
@@ -37,8 +43,8 @@ A modern Progressive Web App (PWA) for organizing and tracking daily work entrie
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd task-organizer
+git clone https://github.com/ManishJangid007/Worklog.git
+cd Worklog
 ```
 
 2. Install dependencies:
@@ -93,6 +99,31 @@ This creates a `build` folder with the optimized production files.
 1. Click the "Summary" button in the action row
 2. Select a date filter (YTD, MTD, WTD, All Time)
 3. View visual charts showing hours spent per project
+
+## Technology Stack
+
+- **React 18**: Modern React with hooks and functional components
+- **TypeScript**: Type-safe development
+- **IndexedDB**: Local database for data persistence
+- **CSS3**: Custom styling with CSS variables for theming
+- **Chart.js**: Data visualization for summary reports
+- **PWA**: Progressive Web App capabilities
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+**Manish Jangid** - [GitHub](https://github.com/ManishJangid007)
+
+---
+
+⭐ If you find this project helpful, please give it a star!
 4. See total statistics for the selected period
 
 ### Data Backup
