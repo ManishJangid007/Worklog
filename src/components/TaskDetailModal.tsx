@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Copy, Edit, Trash2, Save, Clock, Check, Plus } from 'lucide-react';
+import { X, Copy, Edit, Trash2, Save, Clock, Check, Plus, RotateCcw } from 'lucide-react';
 import { DailyTask, Project, Task } from '../types';
 import { databaseService } from '../services/database';
 import { v4 as uuidv4 } from 'uuid';
@@ -46,7 +46,12 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     React.useEffect(() => {
         if (dailyTask) {
             setEditedProjects([...dailyTask.projects]);
-            setEditedTasks([...dailyTask.tasks]);
+            // Ensure all tasks have the completed field properly initialized
+            const tasksWithCompletion = dailyTask.tasks.map(task => ({
+                ...task,
+                completed: task.completed ?? false
+            }));
+            setEditedTasks(tasksWithCompletion);
         }
     }, [dailyTask]);
 
@@ -73,10 +78,17 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         });
     };
 
-    const copyToClipboard = async (text: string) => {
+    const copyToClipboard = async (text: string, buttonElement?: HTMLElement) => {
         try {
             await navigator.clipboard.writeText(text);
-            // You could add a toast notification here
+
+            // Add animation class to button
+            if (buttonElement) {
+                buttonElement.classList.add('copy-animation');
+                setTimeout(() => {
+                    buttonElement.classList.remove('copy-animation');
+                }, 500);
+            }
         } catch (error) {
             console.error('Failed to copy to clipboard:', error);
             // Fallback for older browsers
@@ -86,31 +98,39 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
+
+            // Add animation even for fallback
+            if (buttonElement) {
+                buttonElement.classList.add('copy-animation');
+                setTimeout(() => {
+                    buttonElement.classList.remove('copy-animation');
+                }, 500);
+            }
         }
     };
 
-    const copyAllData = async () => {
+    const copyAllData = async (event: React.MouseEvent<HTMLButtonElement>) => {
         if (!dailyTask) return;
 
-        const formattedData = `${dailyTask.date}\n${dailyTask.projects.map(project => {
-            const projectTasks = dailyTask.tasks.filter(task => task.projectId === project.id);
+        const formattedData = `${dailyTask.date}\n${editedProjects.map(project => {
+            const projectTasks = editedTasks.filter(task => task.projectId === project.id);
             return `    - ${project.name}\n${projectTasks.map(task => `        - ${task.description}`).join('\n')}`;
         }).join('\n\n')}`;
 
-        await copyToClipboard(formattedData);
+        await copyToClipboard(formattedData, event.currentTarget);
     };
 
-    const copyProjectBlock = async (project: Project) => {
-        const projectTasks = dailyTask?.tasks.filter(task => task.projectId === project.id) || [];
+    const copyProjectBlock = async (project: Project, event: React.MouseEvent<HTMLButtonElement>) => {
+        const projectTasks = editedTasks.filter(task => task.projectId === project.id);
         const taskWord = projectTasks.length === 1 ? 'Task' : 'Tasks';
         const formattedBlock = `${taskWord}\n    - ${projectTasks.map(task => task.description).join('\n    - ')}`;
-        await copyToClipboard(formattedBlock);
+        await copyToClipboard(formattedBlock, event.currentTarget);
     };
 
-    const copyProjectTasks = async (project: Project) => {
-        const projectTasks = dailyTask?.tasks.filter(task => task.projectId === project.id) || [];
+    const copyProjectTasks = async (project: Project, event: React.MouseEvent<HTMLButtonElement>) => {
+        const projectTasks = editedTasks.filter(task => task.projectId === project.id);
         const formattedTasks = projectTasks.map(task => task.description).join(', ');
-        await copyToClipboard(formattedTasks);
+        await copyToClipboard(formattedTasks, event.currentTarget);
     };
 
     const handleSave = async () => {
@@ -140,7 +160,12 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     const handleCancel = () => {
         if (dailyTask) {
             setEditedProjects([...dailyTask.projects]);
-            setEditedTasks([...dailyTask.tasks]);
+            // Ensure all tasks have the completed field properly initialized
+            const tasksWithCompletion = dailyTask.tasks.map(task => ({
+                ...task,
+                completed: task.completed ?? false
+            }));
+            setEditedTasks(tasksWithCompletion);
         }
         setEditing(false);
         setShowNewSectionInput(false);
@@ -182,10 +207,21 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         );
     };
 
-    const updateTaskCompletion = (taskId: string, completed: boolean) => {
-        setEditedTasks(prev =>
-            prev.map(t => t.id === taskId ? { ...t, completed } : t)
+    const updateTaskCompletion = async (taskId: string, completed: boolean) => {
+        const updatedTasks = editedTasks.map(t =>
+            t.id === taskId ? { ...t, completed } : t
         );
+        setEditedTasks(updatedTasks);
+
+        // Save to database immediately
+        try {
+            const updatedTask = updatedTasks.find(task => task.id === taskId);
+            if (updatedTask) {
+                await databaseService.saveTask(updatedTask);
+            }
+        } catch (error) {
+            console.error('Failed to save task completion:', error);
+        }
     };
 
     const handleEditProject = (project: Project) => {
@@ -273,7 +309,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                             onClick={() => editing ? handleCancel() : setEditing(true)}
                             title={editing ? 'Cancel editing' : 'Edit'}
                         >
-                            {editing ? <X size={20} /> : <Edit size={20} />}
+                            {editing ? <RotateCcw size={20} /> : <Edit size={20} />}
                         </button>
                         <button className="close-button" onClick={onClose}>
                             <X size={20} />
@@ -407,14 +443,14 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                     <div className="copy-buttons">
                                         <button
                                             className="copy-button"
-                                            onClick={() => copyProjectBlock(project)}
+                                            onClick={(e) => copyProjectBlock(project, e)}
                                             title="Copy project block"
                                         >
                                             Copy Block
                                         </button>
                                         <button
                                             className="copy-button"
-                                            onClick={() => copyProjectTasks(project)}
+                                            onClick={(e) => copyProjectTasks(project, e)}
                                             title="Copy tasks only"
                                         >
                                             Copy Tasks

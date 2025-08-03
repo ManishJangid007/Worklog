@@ -54,27 +54,91 @@ class DatabaseService {
     async getDailyTask(date: string): Promise<DailyTask | null> {
         if (!this.db) throw new Error('Database not initialized');
 
-        return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction(['dailyTasks'], 'readonly');
-            const store = transaction.objectStore('dailyTasks');
-            const index = store.index('date');
-            const request = index.get(date);
+        return new Promise(async (resolve, reject) => {
+            try {
+                const transaction = this.db!.transaction(['dailyTasks', 'tasks'], 'readonly');
+                const dailyTasksStore = transaction.objectStore('dailyTasks');
+                const tasksStore = transaction.objectStore('tasks');
 
-            request.onsuccess = () => resolve(request.result || null);
-            request.onerror = () => reject(request.error);
+                const index = dailyTasksStore.index('date');
+                const dailyTaskRequest = index.get(date);
+
+                dailyTaskRequest.onsuccess = async () => {
+                    const dailyTask = dailyTaskRequest.result;
+                    if (!dailyTask) {
+                        resolve(null);
+                        return;
+                    }
+
+                    // Get individual tasks for this date
+                    const tasksIndex = tasksStore.index('date');
+                    const tasksRequest = tasksIndex.getAll(date);
+
+                    tasksRequest.onsuccess = () => {
+                        const tasks = tasksRequest.result || [];
+                        // Merge individual tasks with daily task
+                        const updatedDailyTask = {
+                            ...dailyTask,
+                            tasks: tasks
+                        };
+                        resolve(updatedDailyTask);
+                    };
+
+                    tasksRequest.onerror = () => reject(tasksRequest.error);
+                };
+
+                dailyTaskRequest.onerror = () => reject(dailyTaskRequest.error);
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
     async getAllDailyTasks(): Promise<DailyTask[]> {
         if (!this.db) throw new Error('Database not initialized');
 
-        return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction(['dailyTasks'], 'readonly');
-            const store = transaction.objectStore('dailyTasks');
-            const request = store.getAll();
+        return new Promise(async (resolve, reject) => {
+            try {
+                const transaction = this.db!.transaction(['dailyTasks', 'tasks'], 'readonly');
+                const dailyTasksStore = transaction.objectStore('dailyTasks');
+                const tasksStore = transaction.objectStore('tasks');
 
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
+                const dailyTasksRequest = dailyTasksStore.getAll();
+
+                dailyTasksRequest.onsuccess = async () => {
+                    const dailyTasks = dailyTasksRequest.result || [];
+
+                    // Get all tasks and group them by date
+                    const tasksRequest = tasksStore.getAll();
+
+                    tasksRequest.onsuccess = () => {
+                        const allTasks = tasksRequest.result || [];
+
+                        // Group tasks by date
+                        const tasksByDate = allTasks.reduce((acc, task) => {
+                            if (!acc[task.date]) {
+                                acc[task.date] = [];
+                            }
+                            acc[task.date].push(task);
+                            return acc;
+                        }, {} as { [date: string]: any[] });
+
+                        // Merge tasks with daily tasks
+                        const updatedDailyTasks = dailyTasks.map(dailyTask => ({
+                            ...dailyTask,
+                            tasks: tasksByDate[dailyTask.date] || []
+                        }));
+
+                        resolve(updatedDailyTasks);
+                    };
+
+                    tasksRequest.onerror = () => reject(tasksRequest.error);
+                };
+
+                dailyTasksRequest.onerror = () => reject(dailyTasksRequest.error);
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
