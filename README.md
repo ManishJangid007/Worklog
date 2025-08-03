@@ -1,46 +1,211 @@
-# Getting Started with Create React App
+# Task Organizer
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern Progressive Web App (PWA) for organizing and tracking daily tasks with project management and time tracking features.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+### Core Functionality
+- **Daily Task Management**: Add tasks for specific dates with project organization
+- **Project Management**: Create and manage projects/sections for tasks
+- **Time Tracking**: Track hours spent on each project for summary reports
+- **Copy Functionality**: Copy tasks in various formats for sharing on Teams
 
-### `npm start`
+### User Interface
+- **Modern Design**: Clean, responsive interface with dark/light theme support
+- **Single Screen Layout**: All functionality accessible from the main screen
+- **Modal Dialogs**: Intuitive task and project management through modals
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Data Management
+- **IndexedDB Storage**: Local database for reliable data persistence
+- **Backup & Restore**: Export/import data as JSON files
+- **PWA Support**: Installable as a native app with offline capabilities
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Advanced Features
+- **Date Filtering**: Filter tasks by Year-to-Date, Month-to-Date, Week-to-Date
+- **Summary Reports**: Visual charts showing hours spent per project
+- **Sorting**: Sort tasks by date in ascending or descending order
+- **Theme Toggle**: Switch between light and dark themes
 
-### `npm test`
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
+- Node.js (version 14 or higher)
+- npm or yarn
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd task-organizer
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. Install dependencies:
+```bash
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. Start the development server:
+```bash
+npm start
+```
 
-### `npm run eject`
+4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Building for Production
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+To create a production build:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+npm run build
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+This creates a `build` folder with the optimized production files.
 
-## Learn More
+## Usage
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Adding Tasks
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Click the "Add Task" button in the action row
+2. Select a date (defaults to current date)
+3. Choose an existing project or create a new one
+4. Add multiple tasks under the selected project
+5. Click "Save Tasks" to create the daily task entry
+
+### Managing Projects
+
+- Projects are created automatically when adding tasks
+- Each project can have multiple tasks
+- Hours spent can be tracked per project for summary reports
+
+### Viewing Task Details
+
+1. Click "View Details" on any task card
+2. View all tasks and projects for that date
+3. Use copy buttons to copy data in different formats:
+   - **Copy All**: Copies the entire day's data in Teams format
+   - **Copy Block**: Copies project tasks in formatted block
+   - **Copy Tasks**: Copies just the task descriptions
+
+### Summary Reports
+
+1. Click the "Summary" button in the action row
+2. Select a date filter (YTD, MTD, WTD, All Time)
+3. View visual charts showing hours spent per project
+4. See total statistics for the selected period
+
+### Data Backup
+
+- **Export**: Click the download icon in the top bar to export all data as JSON
+- **Import**: Click the upload icon to import previously exported data
+
+### Theme Switching
+
+Click the sun/moon icon in the top bar to toggle between light and dark themes.
+
+## Data Format
+
+The app exports data in the following JSON format:
+
+```json
+{
+  "dailyTasks": [
+    {
+      "id": "uuid",
+      "date": "2025-01-01",
+      "projects": [
+        {
+          "id": "uuid",
+          "name": "Project Name",
+          "hoursSpent": 4.5
+        }
+      ],
+      "tasks": [
+        {
+          "id": "uuid",
+          "description": "Task description",
+          "projectId": "uuid",
+          "date": "2025-01-01"
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "uuid",
+      "name": "Project Name"
+    }
+  ],
+  "version": "1.0.0",
+  "timestamp": "2025-01-01T00:00:00.000Z"
+}
+```
+
+## Technical Details
+
+### Architecture
+- **Frontend**: React with TypeScript
+- **State Management**: React hooks and context
+- **Database**: IndexedDB for local storage
+- **Styling**: CSS with CSS variables for theming
+- **Charts**: Chart.js with react-chartjs-2
+- **Icons**: Lucide React
+
+### PWA Features
+- **Service Worker**: Caching and offline support
+- **Manifest**: App installation capabilities
+- **Responsive Design**: Works on all device sizes
+- **Offline First**: Data stored locally with IndexedDB
+
+### Browser Support
+- Chrome (recommended)
+- Firefox
+- Safari
+- Edge
+
+## Development
+
+### Project Structure
+```
+src/
+├── components/          # React components
+│   ├── TopBar.tsx
+│   ├── ActionRow.tsx
+│   ├── TaskCard.tsx
+│   ├── AddTaskModal.tsx
+│   ├── TaskDetailModal.tsx
+│   └── SummaryModal.tsx
+├── contexts/           # React contexts
+│   └── ThemeContext.tsx
+├── services/           # Business logic
+│   └── database.ts
+├── types/              # TypeScript type definitions
+│   └── index.ts
+├── App.tsx            # Main app component
+├── App.css            # Styles
+└── index.tsx          # App entry point
+```
+
+### Available Scripts
+
+- `npm start`: Start development server
+- `npm run build`: Build for production
+- `npm test`: Run tests
+- `npm run eject`: Eject from Create React App
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For issues and questions, please create an issue in the repository.

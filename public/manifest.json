@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Task Organizer",
+  "name": "Task Organizer - Daily Task Management",
+  "description": "A modern web app for organizing and tracking daily tasks with project management and time tracking features.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,11 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#3b82f6",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "business"],
+  "lang": "en",
+  "scope": "/",
+  "prefer_related_applications": false
 }
