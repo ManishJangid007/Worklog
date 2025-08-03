@@ -33,11 +33,11 @@ const ActionRow: React.FC<ActionRowProps> = ({
             <div className="action-buttons">
                 <button className="action-button primary" onClick={onAddTask}>
                     <Plus size={16} />
-                    Add Entry
+                    <span className="button-text">Add Entry</span>
                 </button>
                 <button className="action-button secondary" onClick={onAddProject}>
                     <Plus size={16} />
-                    Project / Section
+                    <span className="button-text">Project / Section</span>
                 </button>
                 <button className="action-button secondary" onClick={onSort}>
                     {sortOrder === 'asc' ? (
@@ -47,32 +47,34 @@ const ActionRow: React.FC<ActionRowProps> = ({
                     ) : (
                         <ArrowUpDown size={16} />
                     )}
-                    Sort {sortOrder === 'asc' ? '(Oldest First)' : '(Newest First)'}
+                    <span className="button-text">Sort {sortOrder === 'asc' ? '(Oldest)' : '(Newest)'}</span>
                 </button>
                 <button className="action-button secondary" onClick={onSummary}>
                     <BarChart3 size={16} />
-                    Summary
+                    <span className="button-text">Summary</span>
                 </button>
             </div>
 
             <div className="date-filter">
-                <Calendar size={16} />
-                <select
-                    value={currentFilter}
-                    onChange={(e) => handleFilterChange(e.target.value as any)}
-                    className="filter-select"
-                >
-                    <option value="all">All Time</option>
-                    <option value="ytd">Year to Date</option>
-                    <option value="mtd">Month to Date</option>
-                    <option value="wtd">Week to Date</option>
-                    <option value="custom">
-                        {customDateRange
-                            ? `Custom: ${new Date(customDateRange.start).toLocaleDateString()} - ${new Date(customDateRange.end).toLocaleDateString()}`
-                            : 'Custom Range'
-                        }
-                    </option>
-                </select>
+                <div className="filter-select-container">
+                    <Calendar size={16} />
+                    <select
+                        value={currentFilter}
+                        onChange={(e) => handleFilterChange(e.target.value as any)}
+                        className="filter-select"
+                    >
+                        <option value="all">All Time</option>
+                        <option value="ytd">Year to Date</option>
+                        <option value="mtd">Month to Date</option>
+                        <option value="wtd">Week to Date</option>
+                        <option value="custom">
+                            {customDateRange
+                                ? `Custom: ${new Date(customDateRange.start).toLocaleDateString()} - ${new Date(customDateRange.end).toLocaleDateString()}`
+                                : 'Custom Range'
+                            }
+                        </option>
+                    </select>
+                </div>
                 {(currentFilter !== 'all' || customDateRange) && (
                     <button
                         className="clear-filter-btn"

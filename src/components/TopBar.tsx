@@ -56,7 +56,7 @@ const TopBar: React.FC<TopBarProps> = ({ onBackup, onRestore }) => {
         <div className="top-bar">
             <div className="top-bar-content">
                 <div className="app-title-container">
-                    <AppIcon size={64} variant={theme.mode === 'light' ? 'black' : 'white'} />
+                    <AppIcon size={48} variant={theme.mode === 'light' ? 'black' : 'white'} />
                     <h1 className="app-title">Worklog</h1>
                 </div>
                 <div className="top-bar-actions">
@@ -65,28 +65,28 @@ const TopBar: React.FC<TopBarProps> = ({ onBackup, onRestore }) => {
                         onClick={handleExport}
                         title="Export Data"
                     >
-                        <Download size={20} />
+                        <Download size={18} />
                     </button>
                     <button
                         className="icon-button"
                         onClick={handleImport}
                         title="Import Data"
                     >
-                        <Upload size={20} />
+                        <Upload size={18} />
                     </button>
                     <button
                         className="icon-button"
                         onClick={() => window.open('https://github.com/ManishJangid007/Worklog', '_blank')}
                         title="View on GitHub"
                     >
-                        <Github size={20} />
+                        <Github size={18} />
                     </button>
                     <button
                         className="icon-button"
                         onClick={toggleTheme}
                         title={`Switch to ${theme.mode === 'light' ? 'dark' : 'light'} mode`}
                     >
-                        {theme.mode === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                        {theme.mode === 'light' ? <Moon size={18} /> : <Sun size={18} />}
                     </button>
                 </div>
             </div>

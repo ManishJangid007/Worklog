@@ -67,6 +67,71 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* Prevent zoom on input focus on mobile */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 767px) {
+  body {
+    /* Prevent horizontal scrolling */
+    overflow-x: hidden;
+  }
+
+  /* Improve touch targets */
+  button,
+  .icon-button,
+  .action-button,
+  .view-details-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Improve modal touch experience */
+  .modal-overlay {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-content {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Improve mobile app feel */
+  .app {
+    /* Prevent bounce on iOS */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Better spacing for mobile */
+  .main-content {
+    padding-bottom: var(--spacing-xl);
+  }
+
+  /* Improve button spacing */
+  .action-buttons {
+    gap: var(--spacing-sm);
+  }
+
+  /* Better modal margins */
+  .modal {
+    margin: var(--spacing-sm);
+    border-radius: var(--radius-lg);
+  }
+
+  /* Improve form elements on mobile */
+  .form-input,
+  .form-select,
+  .date-picker-trigger {
+    font-size: 16px;
+    /* Prevents zoom on iOS */
+  }
 }
 
 .app {
@@ -151,6 +216,8 @@ body {
   justify-content: center;
   position: relative;
   overflow: hidden;
+  min-width: 40px;
+  min-height: 40px;
 }
 
 .icon-button:hover {
@@ -198,19 +265,22 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-xl);
-  gap: var(--spacing-lg);
+  gap: var(--spacing-xl);
+  max-width: 100%;
 }
 
 .action-buttons {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
 }
 
 .action-button {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   background-color: var(--bg-card);
@@ -219,6 +289,10 @@ body {
   font-size: 0.875rem;
   font-weight: 500;
   transition: all 0.2s ease;
+  white-space: nowrap;
+  min-height: 44px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 .action-button:hover {
@@ -242,6 +316,11 @@ body {
   color: var(--text-primary);
 }
 
+.button-text {
+  display: inline;
+  white-space: nowrap;
+}
+
 .date-filter {
   display: flex;
   align-items: center;
@@ -249,7 +328,10 @@ body {
   color: var(--text-secondary);
 }
 
-.filter-select {
+.filter-select-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
   padding: var(--spacing-sm) var(--spacing-md);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -257,6 +339,22 @@ body {
   color: var(--text-primary);
   font-size: 0.875rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-select-container:hover {
+  border-color: var(--border-hover);
+  background-color: var(--bg-tertiary);
+}
+
+.filter-select {
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  outline: none;
+  flex: 1;
 }
 
 .filter-select:focus {
@@ -280,7 +378,7 @@ body {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-xl);
   box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
 }
@@ -308,8 +406,8 @@ body {
 .view-details-button {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xs) var(--spacing-sm);
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   background-color: var(--bg-tertiary);
@@ -317,6 +415,8 @@ body {
   cursor: pointer;
   font-size: 0.75rem;
   transition: all 0.2s ease;
+  min-height: 36px;
+  white-space: nowrap;
 }
 
 .view-details-button:hover {
@@ -441,11 +541,14 @@ body {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   max-width: 500px;
-  width: 100%;
+  width: 90%;
   max-height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  margin: var(--spacing-md);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .modal.large {
@@ -453,9 +556,12 @@ body {
 }
 
 .add-task-modal {
-  max-width: 700px;
+  max-width: 600px;
+  width: 90%;
   max-height: 90vh;
   min-height: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Alert Modal Styles */
@@ -536,7 +642,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-xl);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -572,7 +678,7 @@ body {
 }
 
 .modal-content {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-xl);
   overflow-y: auto;
   flex: 1;
 }
@@ -580,8 +686,8 @@ body {
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-lg);
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl);
   border-top: 1px solid var(--border-color);
 }
 
@@ -780,6 +886,9 @@ body {
   font-size: 0.875rem;
   transition: border-color 0.2s ease;
   height: 40px;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
 }
 
 .form-input:focus {
@@ -917,11 +1026,12 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm);
+  padding: var(--spacing-md);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   margin-bottom: var(--spacing-xs);
   background-color: var(--bg-tertiary);
+  min-height: 48px;
 }
 
 .task-content {
@@ -929,11 +1039,12 @@ body {
   align-items: center;
   gap: var(--spacing-sm);
   flex: 1;
+  min-height: 24px;
 }
 
 .task-checkbox {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border: 2px solid var(--border-color);
   border-radius: var(--radius-sm);
   background-color: var(--bg-card);
@@ -944,6 +1055,7 @@ body {
   transition: all 0.2s ease;
   flex-shrink: 0;
   color: var(--text-primary);
+  margin-right: var(--spacing-sm);
 }
 
 .task-checkbox:hover {
@@ -966,6 +1078,10 @@ body {
 .task-description {
   flex: 1;
   color: var(--text-primary);
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  min-height: 20px;
 }
 
 .task-project {
@@ -1121,8 +1237,9 @@ body {
 .hours-input {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-sm);
   color: var(--text-secondary);
+  min-height: 40px;
 }
 
 .hours-input-field {
@@ -1168,7 +1285,8 @@ body {
 
 .copy-buttons {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
 }
 
 /* Add Section and Task Styles */
@@ -1287,12 +1405,13 @@ body {
 .hours-input {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-sm);
   color: var(--text-secondary);
+  min-height: 40px;
 }
 
 .copy-button {
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   background-color: var(--bg-card);
@@ -1302,6 +1421,7 @@ body {
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
+  min-height: 36px;
 }
 
 .copy-button:hover {
@@ -1716,14 +1836,27 @@ body {
 
   .tasks-grid {
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    max-width: 100%;
+  }
+
+  .task-card {
+    max-width: 400px;
+    width: 100%;
+  }
+
+  .action-button {
+    min-width: 160px;
+    max-width: 220px;
   }
 
   .modal {
-    max-width: 800px;
+    max-width: 600px;
+    width: 90%;
   }
 
   .add-task-modal {
-    max-width: 800px;
+    max-width: 600px;
+    width: 90%;
   }
 }
 
@@ -1731,6 +1864,27 @@ body {
 @media (max-width: 1399px) and (min-width: 1200px) {
   .tasks-grid {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    max-width: 100%;
+  }
+
+  .task-card {
+    max-width: 380px;
+    width: 100%;
+  }
+
+  .action-button {
+    min-width: 140px;
+    max-width: 200px;
+  }
+
+  .modal {
+    max-width: 550px;
+    width: 90%;
+  }
+
+  .add-task-modal {
+    max-width: 550px;
+    width: 90%;
   }
 }
 
@@ -1738,10 +1892,31 @@ body {
 @media (max-width: 1199px) and (min-width: 992px) {
   .tasks-grid {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    max-width: 100%;
+  }
+
+  .task-card {
+    max-width: 350px;
+    width: 100%;
   }
 
   .action-row {
     gap: var(--spacing-md);
+  }
+
+  .action-button {
+    min-width: 120px;
+    max-width: 180px;
+  }
+
+  .modal {
+    max-width: 500px;
+    width: 90%;
+  }
+
+  .add-task-modal {
+    max-width: 500px;
+    width: 90%;
   }
 }
 
@@ -1790,10 +1965,20 @@ body {
     font-size: 1.25rem;
   }
 
+  .top-bar-actions {
+    gap: var(--spacing-xs);
+  }
+
+  .icon-button {
+    padding: var(--spacing-xs);
+    min-width: 36px;
+    min-height: 36px;
+  }
+
   .action-row {
     flex-direction: column;
     align-items: stretch;
-    gap: var(--spacing-md);
+    gap: var(--spacing-lg);
   }
 
   .action-buttons {
@@ -1804,8 +1989,16 @@ body {
 
   .action-button {
     font-size: 0.8rem;
-    padding: var(--spacing-xs) var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
     min-width: 120px;
+    flex: 1;
+    max-width: 160px;
+    min-height: 44px;
+  }
+
+  .button-text {
+    font-size: 0.75rem;
+    white-space: nowrap;
   }
 
   .date-filter {
@@ -1818,7 +2011,7 @@ body {
   }
 
   .task-card {
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
   }
 
   .task-card-header {
@@ -1839,6 +2032,7 @@ body {
   .modal {
     max-height: 95vh;
     margin: var(--spacing-sm);
+    border-radius: var(--radius-md);
   }
 
   .add-task-modal {
@@ -1848,15 +2042,15 @@ body {
   }
 
   .modal-header {
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
   }
 
   .modal-content {
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
   }
 
   .modal-footer {
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
   }
 
   .project-actions {
@@ -1889,8 +2083,8 @@ body {
   }
 
   .task-checkbox {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
   }
 
   .add-section-container {
@@ -2021,348 +2215,527 @@ body {
 
   .icon-button {
     padding: var(--spacing-xs);
+    min-width: 32px;
+    min-height: 32px;
   }
 
-  .action-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--spacing-sm);
+  /* Hide less important icons on very small screens */
+  .icon-button:nth-child(3) {
+    display: none;
+    /* Hide GitHub icon on very small screens */
   }
+}
 
-  .action-buttons {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs);
+/* Extra small screens - hide less important icons */
+@media (max-width: 400px) {
+  .icon-button:nth-child(3) {
+    display: none;
+    /* Hide GitHub icon on extra small screens */
   }
-
-  .action-button {
-    font-size: 0.75rem;
-    padding: var(--spacing-xs);
-    min-width: 100px;
-    flex: 1;
-    max-width: 140px;
-  }
-
-  .action-button svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .date-filter {
-    justify-content: center;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
-  .filter-select {
-    font-size: 0.8rem;
-    padding: var(--spacing-xs) var(--spacing-sm);
-  }
-
-  .tasks-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-sm);
-  }
-
-  .task-card {
-    padding: var(--spacing-sm);
-  }
-
-  .task-card-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-xs);
-  }
-
-  .task-card-date {
-    font-size: 0.75rem;
-  }
-
-  .view-details-button {
-    font-size: 0.7rem;
-    padding: var(--spacing-xs);
-  }
-
-  .task-card-stats {
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
-  .stat {
-    font-size: 0.75rem;
-    padding: var(--spacing-xs);
-  }
-
-  .project-tag {
-    font-size: 0.65rem;
-    padding: var(--spacing-xs);
-  }
-
-  .empty-state {
-    padding: var(--spacing-lg);
-  }
-
-  .empty-state h2 {
-    font-size: 1.25rem;
-  }
-
-  .empty-state p {
-    font-size: 0.875rem;
-  }
-
-  .modal-overlay {
-    padding: var(--spacing-xs);
-  }
-
+  
   .modal {
-    max-height: 98vh;
     margin: var(--spacing-xs);
-    border-radius: var(--radius-md);
+    max-width: calc(100vw - 20px);
+    width: calc(100vw - 20px);
   }
-
+  
   .add-task-modal {
-    max-width: 100%;
-    min-height: auto;
-    max-height: 95vh;
+    margin: var(--spacing-xs);
+    max-width: calc(100vw - 20px);
+    width: calc(100vw - 20px);
   }
-
+  
   .modal-header {
     padding: var(--spacing-sm);
   }
-
-  .modal-header h2 {
-    font-size: 1.1rem;
-  }
-
+  
   .modal-content {
     padding: var(--spacing-sm);
   }
-
+  
   .modal-footer {
     padding: var(--spacing-sm);
-    gap: var(--spacing-xs);
   }
-
-  .form-group {
-    margin-bottom: var(--spacing-sm);
-  }
-
-  .form-label {
-    font-size: 0.8rem;
-    margin-bottom: var(--spacing-xs);
-  }
-
-  .form-input,
-  .form-select,
-  .date-picker-trigger,
-  .add-new-project-btn {
-    height: 32px;
-    font-size: 0.75rem;
-    padding: var(--spacing-xs) var(--spacing-sm);
-  }
-
-  .add-button {
-    height: 32px;
-    width: 32px;
-  }
-
-  .add-button svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .project-section {
-    padding: var(--spacing-sm);
-    margin-bottom: var(--spacing-sm);
-  }
-
-  .section-header {
-    margin-bottom: var(--spacing-xs);
-    padding-bottom: var(--spacing-xs);
-  }
-
-  .section-header h4 {
-    font-size: 0.8rem;
-  }
-
-  .task-item {
-    padding: var(--spacing-xs);
-    margin-bottom: var(--spacing-xs);
-  }
-
-  .task-description {
-    font-size: 0.8rem;
-  }
-
-  .task-project {
-    font-size: 0.65rem;
-    padding: var(--spacing-xs);
-  }
-
-  .remove-section-btn,
-  .remove-task-btn {
-    padding: var(--spacing-xs);
-  }
-
-  .remove-section-btn svg,
-  .remove-task-btn svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  .date-picker-dropdown {
-    max-width: 260px;
-    min-width: 240px;
-  }
-
-  .date-picker-header {
-    padding: var(--spacing-sm);
-  }
-
-  .current-month {
-    font-size: 0.75rem;
-  }
-
-  .date-picker-calendar {
-    padding: var(--spacing-sm);
-  }
-
-  .calendar-header {
-    gap: 1px;
-    margin-bottom: var(--spacing-xs);
-  }
-
-  .calendar-day-header {
-    font-size: 0.6rem;
-    padding: 1px;
-  }
-
-  .calendar-grid {
-    gap: 1px;
-  }
-
-  .calendar-day {
-    min-height: 20px;
-    font-size: 0.7rem;
-  }
-
-  .project-sections h3 {
-    font-size: 0.9rem;
-    margin-bottom: var(--spacing-sm);
-  }
-
-  .project-selector {
-    gap: var(--spacing-xs);
-  }
-
-  .new-project-input {
-    gap: var(--spacing-xs);
-  }
-
-  .project-input {
-    gap: var(--spacing-xs);
-  }
-
-  .task-input {
-    gap: var(--spacing-xs);
-  }
-
-  .projects-list h3 {
-    font-size: 0.9rem;
-  }
-
-  .project-display {
-    padding: var(--spacing-sm);
-  }
-
-  .project-name {
-    font-size: 0.85rem;
-  }
-
-  .project-edit {
-    padding: var(--spacing-sm);
-    gap: var(--spacing-xs);
-  }
-
-  .project-edit .form-input {
-    font-size: 0.8rem;
-  }
-
-  .alert-modal {
-    max-width: 280px;
-    margin: var(--spacing-xs);
-  }
-
-  .alert-header {
-    padding: var(--spacing-sm);
-  }
-
-  .alert-content {
-    padding: var(--spacing-sm);
-  }
-
-  .alert-title {
-    font-size: 0.9rem;
-  }
-
-  .alert-message {
-    font-size: 0.75rem;
-  }
-
-  .alert-footer {
-    padding: var(--spacing-sm);
-  }
-
-  .alert-footer .button {
-    min-width: 60px;
-    font-size: 0.8rem;
-    padding: var(--spacing-xs) var(--spacing-sm);
-  }
-
-  .summary-stats {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-sm);
-  }
-
-  .stat-card {
-    padding: var(--spacing-sm);
-  }
-
-  .stat-card h3 {
-    font-size: 0.8rem;
-  }
-
-  .stat-value {
-    font-size: 1.5rem;
-  }
-
-  .chart-wrapper {
-    height: 300px;
-  }
-
-  .chart-container h3 {
-    font-size: 0.9rem;
-  }
-
-  .no-data,
-  .loading {
-    padding: var(--spacing-lg);
-    font-size: 0.875rem;
-  }
-
-  .button {
-    font-size: 0.8rem;
-    padding: var(--spacing-xs) var(--spacing-sm);
-  }
-
-  .close-button {
-    padding: var(--spacing-xs);
-  }
-
-  .close-button svg {
+  
+  .task-checkbox {
     width: 16px;
     height: 16px;
+    min-width: 16px;
+    min-height: 16px;
+    margin-right: var(--spacing-xs);
   }
+  
+  .copy-buttons {
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+  
+  .copy-button {
+    font-size: 0.7rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    min-height: 28px;
+    white-space: nowrap;
+  }
+  
+  .project-section {
+    padding: var(--spacing-sm);
+  }
+  
+  .section-header {
+    padding: var(--spacing-sm);
+  }
+  
+  .section-header h4 {
+    font-size: 0.9rem;
+  }
+  
+  .task-item {
+    padding: var(--spacing-xs);
+  }
+  
+  .task-description {
+    font-size: 0.8rem;
+    min-height: 20px;
+  }
+  
+  .task-project {
+    font-size: 0.7rem;
+  }
+  
+  .hours-input {
+    min-height: 20px;
+    font-size: 0.8rem;
+  }
+  
+  .hours-input-field {
+    font-size: 0.8rem;
+    padding: var(--spacing-xs);
+  }
+  
+  .project-action-buttons {
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+  
+  .edit-project-btn,
+  .delete-project-btn {
+    font-size: 0.7rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    min-height: 28px;
+  }
+}
+
+/* iPhone SE and similar very small devices */
+@media (max-width: 375px) {
+  .modal {
+    margin: var(--spacing-xs);
+    max-width: calc(100vw - 16px);
+    width: calc(100vw - 16px);
+  }
+  
+  .add-task-modal {
+    margin: var(--spacing-xs);
+    max-width: calc(100vw - 16px);
+    width: calc(100vw - 16px);
+  }
+  
+  .task-checkbox {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    min-height: 14px;
+    margin-right: var(--spacing-xs);
+  }
+  
+  .copy-button {
+    font-size: 0.65rem;
+    padding: var(--spacing-xs);
+    min-height: 24px;
+    white-space: nowrap;
+  }
+  
+  .section-header h4 {
+    font-size: 0.85rem;
+  }
+  
+  .task-description {
+    font-size: 0.75rem;
+    min-height: 18px;
+  }
+  
+  .task-project {
+    font-size: 0.65rem;
+  }
+  
+  .hours-input {
+    min-height: 18px;
+    font-size: 0.75rem;
+  }
+  
+  .hours-input-field {
+    font-size: 0.75rem;
+    padding: var(--spacing-xs);
+  }
+  
+  .edit-project-btn,
+  .delete-project-btn {
+    font-size: 0.65rem;
+    padding: var(--spacing-xs);
+    min-height: 24px;
+  }
+}
+
+.action-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-md);
+}
+
+.action-buttons {
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.action-button {
+  font-size: 0.75rem;
+  padding: var(--spacing-sm) var(--spacing-md);
+  min-width: 100px;
+  flex: 1;
+  max-width: 140px;
+  min-height: 44px;
+}
+
+.action-button svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.button-text {
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.date-filter {
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.filter-select-container {
+  font-size: 0.8rem;
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.filter-select {
+  font-size: 0.8rem;
+}
+
+.tasks-grid {
+  grid-template-columns: 1fr;
+  gap: var(--spacing-sm);
+}
+
+.task-card {
+  padding: var(--spacing-md);
+}
+
+.task-card-header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+}
+
+.task-card-date {
+  font-size: 0.75rem;
+}
+
+.view-details-button {
+  font-size: 0.7rem;
+  padding: var(--spacing-sm) var(--spacing-md);
+  min-height: 32px;
+}
+
+.task-card-stats {
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.stat {
+  font-size: 0.75rem;
+  padding: var(--spacing-xs);
+}
+
+.project-tag {
+  font-size: 0.65rem;
+  padding: var(--spacing-xs);
+}
+
+.empty-state {
+  padding: var(--spacing-lg);
+}
+
+.empty-state h2 {
+  font-size: 1.25rem;
+}
+
+.empty-state p {
+  font-size: 0.875rem;
+}
+
+.modal-overlay {
+  padding: var(--spacing-xs);
+}
+
+.modal {
+  max-height: 98vh;
+  margin: var(--spacing-xs);
+  border-radius: var(--radius-md);
+}
+
+.add-task-modal {
+  max-width: 100%;
+  min-height: auto;
+  max-height: 95vh;
+}
+
+.modal-header {
+  padding: var(--spacing-md);
+}
+
+.modal-header h2 {
+  font-size: 1.1rem;
+}
+
+.modal-content {
+  padding: var(--spacing-md);
+}
+
+.modal-footer {
+  padding: var(--spacing-md);
+  gap: var(--spacing-sm);
+}
+
+.form-group {
+  margin-bottom: var(--spacing-sm);
+}
+
+.form-label {
+  font-size: 0.8rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.form-input,
+.form-select,
+.date-picker-trigger,
+.add-new-project-btn {
+  height: 32px;
+  font-size: 0.75rem;
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.add-button {
+  height: 32px;
+  width: 32px;
+}
+
+.add-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.project-section {
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.section-header {
+  margin-bottom: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+}
+
+.section-header h4 {
+  font-size: 0.8rem;
+}
+
+.task-item {
+  padding: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+
+.task-description {
+  font-size: 0.8rem;
+}
+
+.task-project {
+  font-size: 0.65rem;
+  padding: var(--spacing-xs);
+}
+
+.remove-section-btn,
+.remove-task-btn {
+  padding: var(--spacing-xs);
+}
+
+.remove-section-btn svg,
+.remove-task-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+.date-picker-dropdown {
+  max-width: 260px;
+  min-width: 240px;
+}
+
+.date-picker-header {
+  padding: var(--spacing-sm);
+}
+
+.current-month {
+  font-size: 0.75rem;
+}
+
+.date-picker-calendar {
+  padding: var(--spacing-sm);
+}
+
+.calendar-header {
+  gap: 1px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.calendar-day-header {
+  font-size: 0.6rem;
+  padding: 1px;
+}
+
+.calendar-grid {
+  gap: 1px;
+}
+
+.calendar-day {
+  min-height: 20px;
+  font-size: 0.7rem;
+}
+
+.project-sections h3 {
+  font-size: 0.9rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.project-selector {
+  gap: var(--spacing-xs);
+}
+
+.new-project-input {
+  gap: var(--spacing-xs);
+}
+
+.project-input {
+  gap: var(--spacing-xs);
+}
+
+.task-input {
+  gap: var(--spacing-xs);
+}
+
+.projects-list h3 {
+  font-size: 0.9rem;
+}
+
+.project-display {
+  padding: var(--spacing-sm);
+}
+
+.project-name {
+  font-size: 0.85rem;
+}
+
+.project-edit {
+  padding: var(--spacing-sm);
+  gap: var(--spacing-xs);
+}
+
+.project-edit .form-input {
+  font-size: 0.8rem;
+}
+
+.alert-modal {
+  max-width: 280px;
+  margin: var(--spacing-xs);
+}
+
+.alert-header {
+  padding: var(--spacing-sm);
+}
+
+.alert-content {
+  padding: var(--spacing-sm);
+}
+
+.alert-title {
+  font-size: 0.9rem;
+}
+
+.alert-message {
+  font-size: 0.75rem;
+}
+
+.alert-footer {
+  padding: var(--spacing-sm);
+}
+
+.alert-footer .button {
+  min-width: 60px;
+  font-size: 0.8rem;
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.summary-stats {
+  grid-template-columns: 1fr;
+  gap: var(--spacing-sm);
+}
+
+.stat-card {
+  padding: var(--spacing-sm);
+}
+
+.stat-card h3 {
+  font-size: 0.8rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+}
+
+.chart-wrapper {
+  height: 300px;
+}
+
+.chart-container h3 {
+  font-size: 0.9rem;
+}
+
+.no-data,
+.loading {
+  padding: var(--spacing-lg);
+  font-size: 0.875rem;
+}
+
+.button {
+  font-size: 0.8rem;
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.close-button {
+  padding: var(--spacing-xs);
+}
+
+.close-button svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* Landscape orientation adjustments for mobile */
