@@ -556,10 +556,10 @@ body {
 }
 
 .add-task-modal {
-  max-width: 600px;
+  max-width: 400px !important;
   width: 90%;
   max-height: 90vh;
-  min-height: 600px;
+  min-height: auto;
   margin-left: auto;
   margin-right: auto;
 }
@@ -1855,7 +1855,7 @@ body {
   }
 
   .add-task-modal {
-    max-width: 600px;
+    max-width: 380px !important;
     width: 90%;
   }
 }
@@ -1883,7 +1883,7 @@ body {
   }
 
   .add-task-modal {
-    max-width: 550px;
+    max-width: 360px !important;
     width: 90%;
   }
 }
@@ -1915,7 +1915,7 @@ body {
   }
 
   .add-task-modal {
-    max-width: 500px;
+    max-width: 340px !important;
     width: 90%;
   }
 }
@@ -2232,31 +2232,31 @@ body {
     display: none;
     /* Hide GitHub icon on extra small screens */
   }
-  
+
   .modal {
     margin: var(--spacing-xs);
     max-width: calc(100vw - 20px);
     width: calc(100vw - 20px);
   }
-  
+
   .add-task-modal {
     margin: var(--spacing-xs);
     max-width: calc(100vw - 20px);
     width: calc(100vw - 20px);
   }
-  
+
   .modal-header {
     padding: var(--spacing-sm);
   }
-  
+
   .modal-content {
     padding: var(--spacing-sm);
   }
-  
+
   .modal-footer {
     padding: var(--spacing-sm);
   }
-  
+
   .task-checkbox {
     width: 16px;
     height: 16px;
@@ -2264,59 +2264,59 @@ body {
     min-height: 16px;
     margin-right: var(--spacing-xs);
   }
-  
+
   .copy-buttons {
     gap: var(--spacing-xs);
     flex-wrap: wrap;
   }
-  
+
   .copy-button {
     font-size: 0.7rem;
     padding: var(--spacing-xs) var(--spacing-sm);
     min-height: 28px;
     white-space: nowrap;
   }
-  
+
   .project-section {
     padding: var(--spacing-sm);
   }
-  
+
   .section-header {
     padding: var(--spacing-sm);
   }
-  
+
   .section-header h4 {
     font-size: 0.9rem;
   }
-  
+
   .task-item {
     padding: var(--spacing-xs);
   }
-  
+
   .task-description {
     font-size: 0.8rem;
     min-height: 20px;
   }
-  
+
   .task-project {
     font-size: 0.7rem;
   }
-  
+
   .hours-input {
     min-height: 20px;
     font-size: 0.8rem;
   }
-  
+
   .hours-input-field {
     font-size: 0.8rem;
     padding: var(--spacing-xs);
   }
-  
+
   .project-action-buttons {
     gap: var(--spacing-xs);
     flex-wrap: wrap;
   }
-  
+
   .edit-project-btn,
   .delete-project-btn {
     font-size: 0.7rem;
@@ -2332,13 +2332,13 @@ body {
     max-width: calc(100vw - 16px);
     width: calc(100vw - 16px);
   }
-  
+
   .add-task-modal {
     margin: var(--spacing-xs);
     max-width: calc(100vw - 16px);
     width: calc(100vw - 16px);
   }
-  
+
   .task-checkbox {
     width: 14px;
     height: 14px;
@@ -2346,37 +2346,37 @@ body {
     min-height: 14px;
     margin-right: var(--spacing-xs);
   }
-  
+
   .copy-button {
     font-size: 0.65rem;
     padding: var(--spacing-xs);
     min-height: 24px;
     white-space: nowrap;
   }
-  
+
   .section-header h4 {
     font-size: 0.85rem;
   }
-  
+
   .task-description {
     font-size: 0.75rem;
     min-height: 18px;
   }
-  
+
   .task-project {
     font-size: 0.65rem;
   }
-  
+
   .hours-input {
     min-height: 18px;
     font-size: 0.75rem;
   }
-  
+
   .hours-input-field {
     font-size: 0.75rem;
     padding: var(--spacing-xs);
   }
-  
+
   .edit-project-btn,
   .delete-project-btn {
     font-size: 0.65rem;
