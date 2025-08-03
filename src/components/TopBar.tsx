@@ -56,7 +56,7 @@ const TopBar: React.FC<TopBarProps> = ({ onBackup, onRestore }) => {
         <div className="top-bar">
             <div className="top-bar-content">
                 <div className="app-title-container">
-                    <AppIcon size={32} variant={theme.mode === 'light' ? 'black' : 'white'} />
+                    <AppIcon size={64} variant={theme.mode === 'light' ? 'black' : 'white'} />
                     <h1 className="app-title">Worklog</h1>
                 </div>
                 <div className="top-bar-actions">
