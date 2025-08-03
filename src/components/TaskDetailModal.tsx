@@ -68,6 +68,17 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         loadProjects();
     }, []);
 
+    // Reset edit mode when modal closes
+    React.useEffect(() => {
+        if (!isOpen) {
+            setEditing(false);
+            setShowNewSectionInput(false);
+            setShowSectionDropdown(false);
+            setNewSectionName('');
+            setNewTaskInputs({});
+        }
+    }, [isOpen]);
+
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', {
@@ -311,7 +322,14 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                         >
                             {editing ? <RotateCcw size={20} /> : <Edit size={20} />}
                         </button>
-                        <button className="close-button" onClick={onClose}>
+                        <button className="close-button" onClick={() => {
+                            setEditing(false);
+                            setShowNewSectionInput(false);
+                            setShowSectionDropdown(false);
+                            setNewSectionName('');
+                            setNewTaskInputs({});
+                            onClose();
+                        }}>
                             <X size={20} />
                         </button>
                     </div>
