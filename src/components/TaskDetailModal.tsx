@@ -235,13 +235,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         }
     };
 
-    const handleEditProject = (project: Project) => {
-        if (editingProjectId === project.id) {
-            setEditingProjectId(null);
-        } else {
-            setEditingProjectId(project.id);
-        }
-    };
+
 
     const addNewSection = async (sectionName?: string) => {
         const nameToAdd = sectionName || newSectionName.trim();

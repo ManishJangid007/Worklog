@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Filter, BarChart3, Calendar, ArrowUpDown, ArrowUp, ArrowDown, X } from 'lucide-react';
+import { Plus, BarChart3, Calendar, ArrowUpDown, ArrowUp, ArrowDown, X } from 'lucide-react';
 
 interface ActionRowProps {
     onAddTask: () => void;

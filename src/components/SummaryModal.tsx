@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, Calendar } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { DailyTask } from '../types';
@@ -133,14 +133,7 @@ const SummaryModal: React.FC<SummaryModalProps> = ({
         return Object.values(projectHours).reduce((sum, hours) => sum + hours, 0);
     };
 
-    const getFilterLabel = () => {
-        switch (dateFilter) {
-            case 'ytd': return 'Year to Date';
-            case 'mtd': return 'Month to Date';
-            case 'wtd': return 'Week to Date';
-            default: return 'All Time';
-        }
-    };
+
 
     if (!isOpen) return null;
 

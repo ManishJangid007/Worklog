@@ -16,8 +16,6 @@ const AppIcon: React.FC<AppIconProps> = ({
     const iconSrc = variant === 'white' ? worklogWhiteIcon : worklogBlackIcon;
     // Use the larger size for container to accommodate white variant
     const containerSize = size * 1.4;
-    // Adjust size for white variant to make it larger
-    const adjustedSize = variant === 'white' ? size * 1.4 : size;
 
     return (
         <div
