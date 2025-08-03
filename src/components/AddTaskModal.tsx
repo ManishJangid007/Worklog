@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Calendar } from 'lucide-react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { X, Plus, Trash2, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Project, DailyTask } from '../types';
 import { databaseService } from '../services/database';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,10 +23,16 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
     const [projectSections, setProjectSections] = useState<ProjectSection[]>([]);
     const [newProjectName, setNewProjectName] = useState('');
     const [showNewProjectInput, setShowNewProjectInput] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [resetKey, setResetKey] = useState(0);
 
     useEffect(() => {
         if (isOpen) {
             loadProjects();
+        } else {
+            // Reset form when modal closes
+            resetForm();
         }
     }, [isOpen]);
 
@@ -155,6 +159,68 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
         setProjectSections([]);
         setNewProjectName('');
         setShowNewProjectInput(false);
+        setShowDatePicker(false);
+        setCurrentMonth(new Date());
+        setResetKey(prev => prev + 1);
+    };
+
+    // Custom Date Picker Functions
+    const getDaysInMonth = (date: Date) => {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const startingDay = firstDay.getDay();
+
+        const days = [];
+
+        // Add empty cells for days before the first day of the month
+        for (let i = 0; i < startingDay; i++) {
+            days.push(null);
+        }
+
+        // Add all days of the month
+        for (let i = 1; i <= daysInMonth; i++) {
+            days.push(new Date(year, month, i));
+        }
+
+        return days;
+    };
+
+    const formatDate = (date: Date) => {
+        return date.toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    };
+
+    const isSameDay = (date1: Date, date2: Date) => {
+        return date1.getDate() === date2.getDate() &&
+            date1.getMonth() === date2.getMonth() &&
+            date1.getFullYear() === date2.getFullYear();
+    };
+
+    const isToday = (date: Date) => {
+        return isSameDay(date, new Date());
+    };
+
+    const handleDateSelect = (date: Date) => {
+        setSelectedDate(date);
+        setShowDatePicker(false);
+    };
+
+    const navigateMonth = (direction: 'prev' | 'next') => {
+        setCurrentMonth(prev => {
+            const newMonth = new Date(prev);
+            if (direction === 'prev') {
+                newMonth.setMonth(newMonth.getMonth() - 1);
+            } else {
+                newMonth.setMonth(newMonth.getMonth() + 1);
+            }
+            return newMonth;
+        });
     };
 
     if (!isOpen) return null;
@@ -164,32 +230,77 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
             <div className="modal add-task-modal">
                 <div className="modal-header">
                     <h2>Add Tasks</h2>
-                    <button className="close-button" onClick={onClose}>
+                    <button className="close-button" onClick={() => {
+                        resetForm();
+                        onClose();
+                    }}>
                         <X size={20} />
                     </button>
                 </div>
 
                 <div className="modal-content">
-                    {/* Beautiful Date Picker */}
+                    {/* Custom Date Picker */}
                     <div className="form-group">
                         <label className="form-label">
                             <Calendar size={16} className="label-icon" />
                             Date
                         </label>
-                        <div className="date-picker-container">
-                            <DatePicker
-                                selected={selectedDate}
-                                onChange={(date: Date | null) => {
-                                    if (date) {
-                                        setSelectedDate(date);
-                                    }
-                                }}
-                                dateFormat="MMMM d, yyyy"
-                                className="date-picker-input"
-                                placeholderText="Select date"
-                                showPopperArrow={false}
-                                popperPlacement="bottom-start"
-                            />
+                        <div className="custom-date-picker">
+                            <button
+                                className="date-picker-trigger"
+                                onClick={() => setShowDatePicker(!showDatePicker)}
+                            >
+                                <Calendar size={16} />
+                                <span>{formatDate(selectedDate)}</span>
+                                <ChevronRight size={16} className={`chevron ${showDatePicker ? 'rotated' : ''}`} />
+                            </button>
+
+                            {showDatePicker && (
+                                <div className="date-picker-dropdown">
+                                    <div className="date-picker-header">
+                                        <button
+                                            className="nav-button"
+                                            onClick={() => navigateMonth('prev')}
+                                        >
+                                            <ChevronLeft size={16} />
+                                        </button>
+                                        <span className="current-month">
+                                            {currentMonth.toLocaleDateString('en-US', {
+                                                month: 'long',
+                                                year: 'numeric'
+                                            })}
+                                        </span>
+                                        <button
+                                            className="nav-button"
+                                            onClick={() => navigateMonth('next')}
+                                        >
+                                            <ChevronRight size={16} />
+                                        </button>
+                                    </div>
+
+                                    <div className="date-picker-calendar">
+                                        <div className="calendar-header">
+                                            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                                                <div key={day} className="calendar-day-header">
+                                                    {day}
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="calendar-grid">
+                                            {getDaysInMonth(currentMonth).map((day, index) => (
+                                                <div
+                                                    key={index}
+                                                    className={`calendar-day ${!day ? 'empty' : ''} ${day && isSameDay(day, selectedDate) ? 'selected' : ''} ${day && isToday(day) ? 'today' : ''}`}
+                                                    onClick={() => day && handleDateSelect(day)}
+                                                >
+                                                    {day ? day.getDate() : ''}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -278,6 +389,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
                                     </div>
 
                                     <TaskInput
+                                        key={`${section.id}-${resetKey}`}
                                         onAddTask={(taskDescription) => addTaskToSection(section.id, taskDescription)}
                                     />
 
@@ -303,7 +415,10 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
                 </div>
 
                 <div className="modal-footer">
-                    <button className="button secondary" onClick={onClose}>
+                    <button className="button secondary" onClick={() => {
+                        resetForm();
+                        onClose();
+                    }}>
                         Cancel
                     </button>
                     <button
