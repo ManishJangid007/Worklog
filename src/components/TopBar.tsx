@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Upload, Sun, Moon } from 'lucide-react';
+import { Download, Upload, Sun, Moon, Github } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { databaseService } from '../services/database';
 import AppIcon from './AppIcon';
@@ -73,6 +73,13 @@ const TopBar: React.FC<TopBarProps> = ({ onBackup, onRestore }) => {
                         title="Import Data"
                     >
                         <Upload size={20} />
+                    </button>
+                    <button
+                        className="icon-button"
+                        onClick={() => window.open('https://github.com/ManishJangid007/Worklog', '_blank')}
+                        title="View on GitHub"
+                    >
+                        <Github size={20} />
                     </button>
                     <button
                         className="icon-button"
