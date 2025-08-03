@@ -3,6 +3,7 @@ export interface Task {
   description: string;
   projectId: string;
   date: string;
+  completed?: boolean;
 }
 
 export interface Project {

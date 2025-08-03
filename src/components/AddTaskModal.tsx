@@ -128,22 +128,22 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
         setProjectSections(updatedSections);
     };
 
-    const handleSave = async () => {
+        const handleSave = async () => {
         const allTasks = projectSections.flatMap(section =>
             section.tasks.map(task => ({
                 ...task,
                 projectId: section.projectId,
-                date: selectedDate.toISOString().split('T')[0]
+                date: formatDateForDB(selectedDate)
             }))
         );
 
         if (allTasks.length === 0) return;
 
-        const selectedDateStr = selectedDate.toISOString().split('T')[0];
+        const selectedDateStr = formatDateForDB(selectedDate);
 
         // Check if a daily task already exists for this date
         const existingDailyTask = await databaseService.getDailyTask(selectedDateStr);
-
+        
         if (existingDailyTask) {
             setAlertModal({
                 isOpen: true,
@@ -156,13 +156,13 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
 
         // Check for existing tasks on the same date
         const existingTasks = await databaseService.getTasksByDate(selectedDateStr);
-
+        
         if (existingTasks.length > 0) {
             const existingTaskNames = existingTasks.map(task => task.description.toLowerCase());
             const newTaskNames = allTasks.map(task => task.description.toLowerCase());
-
+            
             const duplicates = newTaskNames.filter(name => existingTaskNames.includes(name));
-
+            
             if (duplicates.length > 0) {
                 setAlertModal({
                     isOpen: true,
@@ -199,6 +199,14 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
         } catch (error) {
             console.error('Failed to save tasks:', error);
         }
+    };
+
+    // Helper function to format date for database (YYYY-MM-DD)
+    const formatDateForDB = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     };
 
     const resetForm = () => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Copy, Edit, Trash2, Save, Clock } from 'lucide-react';
+import { X, Copy, Edit, Trash2, Save, Clock, Check } from 'lucide-react';
 import { DailyTask, Project, Task } from '../types';
 import { databaseService } from '../services/database';
 
@@ -37,12 +37,23 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         });
     };
 
-    const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text);
-        // You could add a toast notification here
+    const copyToClipboard = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            // You could add a toast notification here
+        } catch (error) {
+            console.error('Failed to copy to clipboard:', error);
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+        }
     };
 
-    const copyAllData = () => {
+    const copyAllData = async () => {
         if (!dailyTask) return;
 
         const formattedData = `${dailyTask.date}\n${dailyTask.projects.map(project => {
@@ -50,20 +61,20 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             return `    - ${project.name}\n${projectTasks.map(task => `        - ${task.description}`).join('\n')}`;
         }).join('\n\n')}`;
 
-        copyToClipboard(formattedData);
+        await copyToClipboard(formattedData);
     };
 
-    const copyProjectBlock = (project: Project) => {
+    const copyProjectBlock = async (project: Project) => {
         const projectTasks = dailyTask?.tasks.filter(task => task.projectId === project.id) || [];
         const taskWord = projectTasks.length === 1 ? 'Task' : 'Tasks';
         const formattedBlock = `${taskWord}\n    - ${projectTasks.map(task => task.description).join('\n    - ')}`;
-        copyToClipboard(formattedBlock);
+        await copyToClipboard(formattedBlock);
     };
 
-    const copyProjectTasks = (project: Project) => {
+    const copyProjectTasks = async (project: Project) => {
         const projectTasks = dailyTask?.tasks.filter(task => task.projectId === project.id) || [];
         const formattedTasks = projectTasks.map(task => task.description).join(', ');
-        copyToClipboard(formattedTasks);
+        await copyToClipboard(formattedTasks);
     };
 
     const handleSave = async () => {
@@ -123,6 +134,12 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         );
     };
 
+    const updateTaskCompletion = (taskId: string, completed: boolean) => {
+        setEditedTasks(prev =>
+            prev.map(t => t.id === taskId ? { ...t, completed } : t)
+        );
+    };
+
     if (!isOpen || !dailyTask) return null;
 
     return (
@@ -140,13 +157,6 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                         >
                             <Copy size={20} />
                         </button>
-                        <button
-                            className="icon-button"
-                            onClick={() => setEditing(!editing)}
-                            title={editing ? 'Cancel editing' : 'Edit'}
-                        >
-                            {editing ? <X size={20} /> : <Edit size={20} />}
-                        </button>
                         <button className="close-button" onClick={onClose}>
                             <X size={20} />
                         </button>
@@ -160,15 +170,24 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                             <div key={project.id} className="project-section">
                                 <div className="project-header">
                                     <h3>{project.name}</h3>
-                                    {editing && (
+                                    <div className="project-header-actions">
                                         <button
-                                            className="delete-button"
-                                            onClick={() => handleDeleteProject(project.id)}
-                                            title="Delete project"
+                                            className="icon-button"
+                                            onClick={() => setEditing(!editing)}
+                                            title={editing ? 'Cancel editing' : 'Edit'}
                                         >
-                                            <Trash2 size={16} />
+                                            {editing ? <X size={16} /> : <Edit size={16} />}
                                         </button>
-                                    )}
+                                        {editing && (
+                                            <button
+                                                className="delete-button"
+                                                onClick={() => handleDeleteProject(project.id)}
+                                                title="Delete project"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="project-actions">
@@ -184,35 +203,48 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                         />
                                     </div>
 
-                                    <button
-                                        className="copy-button"
-                                        onClick={() => copyProjectBlock(project)}
-                                        title="Copy project block"
-                                    >
-                                        Copy Block
-                                    </button>
-                                    <button
-                                        className="copy-button"
-                                        onClick={() => copyProjectTasks(project)}
-                                        title="Copy tasks only"
-                                    >
-                                        Copy Tasks
-                                    </button>
+                                    <div className="copy-buttons">
+                                        <button
+                                            className="copy-button"
+                                            onClick={() => copyProjectBlock(project)}
+                                            title="Copy project block"
+                                        >
+                                            Copy Block
+                                        </button>
+                                        <button
+                                            className="copy-button"
+                                            onClick={() => copyProjectTasks(project)}
+                                            title="Copy tasks only"
+                                        >
+                                            Copy Tasks
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div className="tasks-list">
                                     {projectTasks.map(task => (
                                         <div key={task.id} className="task-item">
-                                            {editing ? (
-                                                <input
-                                                    type="text"
-                                                    value={task.description}
-                                                    onChange={(e) => updateTaskDescription(task.id, e.target.value)}
-                                                    className="form-input"
-                                                />
-                                            ) : (
-                                                <span className="task-description">{task.description}</span>
-                                            )}
+                                            <div className="task-content">
+                                                <button
+                                                    className={`task-checkbox ${task.completed ? 'completed' : ''}`}
+                                                    onClick={() => updateTaskCompletion(task.id, !task.completed)}
+                                                    title={task.completed ? 'Mark as incomplete' : 'Mark as complete'}
+                                                >
+                                                    {task.completed && <Check size={12} />}
+                                                </button>
+                                                {editing ? (
+                                                    <input
+                                                        type="text"
+                                                        value={task.description}
+                                                        onChange={(e) => updateTaskDescription(task.id, e.target.value)}
+                                                        className={`form-input ${task.completed ? 'completed' : ''}`}
+                                                    />
+                                                ) : (
+                                                    <span className={`task-description ${task.completed ? 'completed' : ''}`}>
+                                                        {task.description}
+                                                    </span>
+                                                )}
+                                            </div>
                                             {editing && (
                                                 <button
                                                     className="delete-button small"
