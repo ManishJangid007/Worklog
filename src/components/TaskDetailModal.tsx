@@ -24,6 +24,24 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     const [newTaskInputs, setNewTaskInputs] = useState<{ [projectId: string]: string }>({});
     const [showNewSectionInput, setShowNewSectionInput] = useState(false);
     const [newSectionName, setNewSectionName] = useState('');
+    const [showSectionDropdown, setShowSectionDropdown] = useState(false);
+    const [availableProjects, setAvailableProjects] = useState<Project[]>([]);
+
+    // Predefined sections
+    const predefinedSections = [
+        'Development',
+        'Design',
+        'Testing',
+        'Documentation',
+        'Meeting',
+        'Research',
+        'Planning',
+        'Review',
+        'Bug Fix',
+        'Feature',
+        'Refactor',
+        'Deployment'
+    ];
 
     React.useEffect(() => {
         if (dailyTask) {
@@ -31,6 +49,19 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             setEditedTasks([...dailyTask.tasks]);
         }
     }, [dailyTask]);
+
+    // Load available projects from database
+    React.useEffect(() => {
+        const loadProjects = async () => {
+            try {
+                const projects = await databaseService.getAllProjects();
+                setAvailableProjects(projects);
+            } catch (error) {
+                console.error('Failed to load projects:', error);
+            }
+        };
+        loadProjects();
+    }, []);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -100,10 +131,22 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             }
 
             setEditing(false);
-            onUpdate();
+            onUpdate(); // This will refresh the home screen
         } catch (error) {
             console.error('Failed to save changes:', error);
         }
+    };
+
+    const handleCancel = () => {
+        if (dailyTask) {
+            setEditedProjects([...dailyTask.projects]);
+            setEditedTasks([...dailyTask.tasks]);
+        }
+        setEditing(false);
+        setShowNewSectionInput(false);
+        setShowSectionDropdown(false);
+        setNewSectionName('');
+        setNewTaskInputs({});
     };
 
     const handleDeleteProject = async (projectId: string) => {
@@ -153,22 +196,38 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         }
     };
 
-    const addNewSection = async () => {
-        if (!newSectionName.trim()) return;
+    const addNewSection = async (sectionName?: string) => {
+        const nameToAdd = sectionName || newSectionName.trim();
+        if (!nameToAdd) return;
 
-        const newProject: Project = {
-            id: uuidv4(),
-            name: newSectionName.trim()
-        };
+        // Check if project already exists in available projects
+        let existingProject = availableProjects.find(p => p.name.toLowerCase() === nameToAdd.toLowerCase());
 
-        try {
-            await databaseService.saveProject(newProject);
-            setEditedProjects([...editedProjects, newProject]);
-            setNewSectionName('');
-            setShowNewSectionInput(false);
-        } catch (error) {
-            console.error('Failed to add new section:', error);
+        if (!existingProject) {
+            // Create new project if it doesn't exist
+            const newProject: Project = {
+                id: uuidv4(),
+                name: nameToAdd
+            };
+
+            try {
+                await databaseService.saveProject(newProject);
+                setAvailableProjects([...availableProjects, newProject]);
+                existingProject = newProject;
+            } catch (error) {
+                console.error('Failed to create new project:', error);
+                return;
+            }
         }
+
+        // Add to current daily task if not already present
+        if (!editedProjects.find(p => p.id === existingProject!.id)) {
+            setEditedProjects([...editedProjects, existingProject!]);
+        }
+
+        setNewSectionName('');
+        setShowNewSectionInput(false);
+        setShowSectionDropdown(false);
     };
 
     const addNewTask = async (projectId: string) => {
@@ -209,6 +268,13 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                         >
                             <Copy size={20} />
                         </button>
+                        <button
+                            className="icon-button"
+                            onClick={() => editing ? handleCancel() : setEditing(true)}
+                            title={editing ? 'Cancel editing' : 'Edit'}
+                        >
+                            {editing ? <X size={20} /> : <Edit size={20} />}
+                        </button>
                         <button className="close-button" onClick={onClose}>
                             <X size={20} />
                         </button>
@@ -216,49 +282,95 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 </div>
 
                 <div className="modal-content">
-                    {/* Add New Section */}
-                    <div className="add-section-container">
-                        {!showNewSectionInput ? (
-                            <button
-                                className="add-section-btn"
-                                onClick={() => setShowNewSectionInput(true)}
-                            >
-                                <Plus size={16} />
-                                Add New Section
-                            </button>
-                        ) : (
-                            <div className="new-section-input">
-                                <input
-                                    type="text"
-                                    placeholder="Enter section name"
-                                    value={newSectionName}
-                                    onChange={(e) => setNewSectionName(e.target.value)}
-                                    className="form-input"
-                                    onKeyPress={(e) => {
-                                        if (e.key === 'Enter') {
-                                            addNewSection();
-                                        }
-                                    }}
-                                />
-                                <button
-                                    className="add-button"
-                                    onClick={addNewSection}
-                                    disabled={!newSectionName.trim()}
-                                >
-                                    <Plus size={16} />
-                                </button>
-                                <button
-                                    className="cancel-button"
-                                    onClick={() => {
-                                        setShowNewSectionInput(false);
-                                        setNewSectionName('');
-                                    }}
-                                >
-                                    <X size={16} />
-                                </button>
-                            </div>
-                        )}
-                    </div>
+                    {/* Add New Section - Only in Edit Mode */}
+                    {editing && (
+                        <div className="add-section-container">
+                            {!showNewSectionInput && !showSectionDropdown ? (
+                                <div className="add-section-buttons">
+                                    <button
+                                        className="add-section-btn"
+                                        onClick={() => setShowSectionDropdown(true)}
+                                    >
+                                        <Plus size={16} />
+                                        Choose Section
+                                    </button>
+                                    <button
+                                        className="add-section-btn custom"
+                                        onClick={() => setShowNewSectionInput(true)}
+                                    >
+                                        <Plus size={16} />
+                                        Custom Section
+                                    </button>
+                                </div>
+                            ) : showSectionDropdown ? (
+                                <div className="section-dropdown">
+                                    <div className="dropdown-header">
+                                        <h4>Choose a section</h4>
+                                        <button
+                                            className="close-button"
+                                            onClick={() => setShowSectionDropdown(false)}
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                    <div className="predefined-sections">
+                                        {availableProjects.length > 0 ? (
+                                            availableProjects.map(project => (
+                                                <button
+                                                    key={project.id}
+                                                    className="section-option"
+                                                    onClick={() => addNewSection(project.name)}
+                                                >
+                                                    {project.name}
+                                                </button>
+                                            ))
+                                        ) : (
+                                            predefinedSections.map(section => (
+                                                <button
+                                                    key={section}
+                                                    className="section-option"
+                                                    onClick={() => addNewSection(section)}
+                                                >
+                                                    {section}
+                                                </button>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="new-section-input">
+                                    <input
+                                        type="text"
+                                        placeholder="Enter custom section name"
+                                        value={newSectionName}
+                                        onChange={(e) => setNewSectionName(e.target.value)}
+                                        className="form-input"
+                                        onKeyPress={(e) => {
+                                            if (e.key === 'Enter') {
+                                                addNewSection();
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        className="add-button"
+                                        onClick={() => addNewSection()}
+                                        disabled={!newSectionName.trim()}
+                                    >
+                                        <Plus size={16} />
+                                    </button>
+                                    <button
+                                        className="cancel-button"
+                                        onClick={() => {
+                                            setShowNewSectionInput(false);
+                                            setNewSectionName('');
+                                        }}
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {editedProjects.map(project => {
                         const projectTasks = editedTasks.filter(task => task.projectId === project.id);
@@ -266,22 +378,17 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                             <div key={project.id} className="project-section">
                                 <div className="project-header">
                                     <h3>{project.name}</h3>
-                                    <div className="project-header-actions">
-                                        <button
-                                            className="icon-button"
-                                            onClick={() => handleEditProject(project)}
-                                            title={editingProjectId === project.id ? 'Cancel editing' : 'Edit project'}
-                                        >
-                                            {editingProjectId === project.id ? <X size={16} /> : <Edit size={16} />}
-                                        </button>
-                                        <button
-                                            className="delete-button"
-                                            onClick={() => handleDeleteProject(project.id)}
-                                            title="Delete project"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </div>
+                                    {editing && (
+                                        <div className="project-header-actions">
+                                            <button
+                                                className="delete-button"
+                                                onClick={() => handleDeleteProject(project.id)}
+                                                title="Delete project"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="project-actions">
@@ -351,28 +458,30 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                         </div>
                                     ))}
 
-                                    {/* Add New Task */}
-                                    <div className="add-task-container">
-                                        <input
-                                            type="text"
-                                            placeholder="Add new task..."
-                                            value={newTaskInputs[project.id] || ''}
-                                            onChange={(e) => setNewTaskInputs(prev => ({ ...prev, [project.id]: e.target.value }))}
-                                            className="form-input"
-                                            onKeyPress={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    addNewTask(project.id);
-                                                }
-                                            }}
-                                        />
-                                        <button
-                                            className="add-button"
-                                            onClick={() => addNewTask(project.id)}
-                                            disabled={!newTaskInputs[project.id]?.trim()}
-                                        >
-                                            <Plus size={16} />
-                                        </button>
-                                    </div>
+                                    {/* Add New Task - Only in Edit Mode */}
+                                    {editing && (
+                                        <div className="add-task-container">
+                                            <input
+                                                type="text"
+                                                placeholder="Add new task..."
+                                                value={newTaskInputs[project.id] || ''}
+                                                onChange={(e) => setNewTaskInputs(prev => ({ ...prev, [project.id]: e.target.value }))}
+                                                className="form-input"
+                                                onKeyPress={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        addNewTask(project.id);
+                                                    }
+                                                }}
+                                            />
+                                            <button
+                                                className="add-button"
+                                                onClick={() => addNewTask(project.id)}
+                                                disabled={!newTaskInputs[project.id]?.trim()}
+                                            >
+                                                <Plus size={16} />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         );
