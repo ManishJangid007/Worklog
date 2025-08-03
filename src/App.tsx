@@ -7,6 +7,7 @@ import AddTaskModal from './components/AddTaskModal';
 import AddProjectModal from './components/AddProjectModal';
 import TaskDetailModal from './components/TaskDetailModal';
 import SummaryModal from './components/SummaryModal';
+import CustomDatePicker from './components/CustomDatePicker';
 import { databaseService } from './services/database';
 import { DailyTask } from './types';
 import './App.css';
@@ -21,6 +22,8 @@ function App() {
     const [selectedDailyTask, setSelectedDailyTask] = useState<DailyTask | null>(null);
     const [dateFilter, setDateFilter] = useState('all');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+    const [customDateRange, setCustomDateRange] = useState<{ start: string; end: string } | null>(null);
+    const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
 
     const initializeApp = useCallback(async () => {
         try {
@@ -69,6 +72,23 @@ function App() {
 
     const handleDateFilter = (filter: string) => {
         setDateFilter(filter);
+        if (filter !== 'custom') {
+            setCustomDateRange(null);
+            setShowCustomDatePicker(false);
+        } else {
+            setShowCustomDatePicker(true);
+        }
+    };
+
+    const handleCustomDateRange = (start: string, end: string) => {
+        setCustomDateRange({ start, end });
+        setShowCustomDatePicker(false);
+    };
+
+    const handleClearFilter = () => {
+        setDateFilter('all');
+        setCustomDateRange(null);
+        setShowCustomDatePicker(false);
     };
 
     const handleViewDetails = (dailyTask: DailyTask) => {
@@ -115,6 +135,16 @@ function App() {
                     weekStart.setDate(today.getDate() - today.getDay());
                     filtered = filtered.filter(task => new Date(task.date) >= weekStart);
                     break;
+                case 'custom':
+                    if (customDateRange) {
+                        filtered = filtered.filter(task => {
+                            const taskDate = new Date(task.date);
+                            const startDate = new Date(customDateRange.start);
+                            const endDate = new Date(customDateRange.end);
+                            return taskDate >= startDate && taskDate <= endDate;
+                        });
+                    }
+                    break;
             }
         }
 
@@ -156,8 +186,10 @@ function App() {
                         onSort={handleSort}
                         onSummary={handleSummary}
                         onDateFilter={handleDateFilter}
+                        onClearFilter={handleClearFilter}
                         currentFilter={dateFilter}
                         sortOrder={sortOrder}
+                        customDateRange={customDateRange}
                     />
 
                     <div className="tasks-container">
@@ -207,6 +239,12 @@ function App() {
                     onClose={() => setShowSummaryModal(false)}
                     dateFilter={dateFilter}
                     onDateFilterChange={handleDateFilter}
+                />
+
+                <CustomDatePicker
+                    isOpen={showCustomDatePicker}
+                    onClose={() => setShowCustomDatePicker(false)}
+                    onDateRangeSelect={handleCustomDateRange}
                 />
             </div>
         </ThemeProvider>

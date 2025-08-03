@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Filter, BarChart3, Calendar, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Plus, Filter, BarChart3, Calendar, ArrowUpDown, ArrowUp, ArrowDown, X } from 'lucide-react';
 
 interface ActionRowProps {
     onAddTask: () => void;
@@ -7,8 +7,10 @@ interface ActionRowProps {
     onSort: () => void;
     onSummary: () => void;
     onDateFilter: (filter: 'all' | 'ytd' | 'mtd' | 'wtd' | 'custom') => void;
+    onClearFilter: () => void;
     currentFilter: string;
     sortOrder: 'asc' | 'desc';
+    customDateRange?: { start: string; end: string } | null;
 }
 
 const ActionRow: React.FC<ActionRowProps> = ({
@@ -17,8 +19,10 @@ const ActionRow: React.FC<ActionRowProps> = ({
     onSort,
     onSummary,
     onDateFilter,
+    onClearFilter,
     currentFilter,
-    sortOrder
+    sortOrder,
+    customDateRange
 }) => {
     const handleFilterChange = (filter: 'all' | 'ytd' | 'mtd' | 'wtd' | 'custom') => {
         onDateFilter(filter);
@@ -62,8 +66,22 @@ const ActionRow: React.FC<ActionRowProps> = ({
                     <option value="ytd">Year to Date</option>
                     <option value="mtd">Month to Date</option>
                     <option value="wtd">Week to Date</option>
-                    <option value="custom">Custom Range</option>
+                    <option value="custom">
+                        {customDateRange
+                            ? `Custom: ${new Date(customDateRange.start).toLocaleDateString()} - ${new Date(customDateRange.end).toLocaleDateString()}`
+                            : 'Custom Range'
+                        }
+                    </option>
                 </select>
+                {(currentFilter !== 'all' || customDateRange) && (
+                    <button
+                        className="clear-filter-btn"
+                        onClick={onClearFilter}
+                        title="Clear filter"
+                    >
+                        <X size={14} />
+                    </button>
+                )}
             </div>
         </div>
     );
