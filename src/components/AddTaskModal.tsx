@@ -3,6 +3,7 @@ import { X, Plus, Trash2, Calendar, ChevronLeft, ChevronRight } from 'lucide-rea
 import { Project, DailyTask } from '../types';
 import { databaseService } from '../services/database';
 import { v4 as uuidv4 } from 'uuid';
+import AlertModal from './AlertModal';
 
 interface AddTaskModalProps {
     isOpen: boolean;
@@ -26,6 +27,17 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [resetKey, setResetKey] = useState(0);
+    const [alertModal, setAlertModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        type: 'error' | 'warning' | 'info' | 'success';
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'error'
+    });
 
     useEffect(() => {
         if (isOpen) {
@@ -127,8 +139,23 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
 
         if (allTasks.length === 0) return;
 
+        const selectedDateStr = selectedDate.toISOString().split('T')[0];
+
+        // Check if a daily task already exists for this date
+        const existingDailyTask = await databaseService.getDailyTask(selectedDateStr);
+
+        if (existingDailyTask) {
+            setAlertModal({
+                isOpen: true,
+                title: 'Task Card Already Exists',
+                message: `Tasks already exist for ${formatDate(selectedDate)}. Please modify the existing task card instead.`,
+                type: 'warning'
+            });
+            return;
+        }
+
         // Check for existing tasks on the same date
-        const existingTasks = await databaseService.getTasksByDate(selectedDate.toISOString().split('T')[0]);
+        const existingTasks = await databaseService.getTasksByDate(selectedDateStr);
 
         if (existingTasks.length > 0) {
             const existingTaskNames = existingTasks.map(task => task.description.toLowerCase());
@@ -137,14 +164,19 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
             const duplicates = newTaskNames.filter(name => existingTaskNames.includes(name));
 
             if (duplicates.length > 0) {
-                alert(`Tasks already exist for this date: ${duplicates.join(', ')}. Please modify existing tasks instead.`);
+                setAlertModal({
+                    isOpen: true,
+                    title: 'Duplicate Tasks Found',
+                    message: `Tasks already exist for this date: ${duplicates.join(', ')}. Please modify existing tasks instead.`,
+                    type: 'error'
+                });
                 return;
             }
         }
 
         const dailyTask: DailyTask = {
             id: uuidv4(),
-            date: selectedDate.toISOString().split('T')[0],
+            date: selectedDateStr,
             projects: projects.filter(p => projectSections.some(s => s.projectId === p.id)),
             tasks: allTasks
         };
@@ -157,7 +189,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
             for (const task of allTasks) {
                 await databaseService.saveTask({
                     ...task,
-                    date: selectedDate.toISOString().split('T')[0]
+                    date: selectedDateStr
                 });
             }
 
@@ -445,6 +477,15 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onSave }) 
                     </button>
                 </div>
             </div>
+
+            {/* Beautiful Alert Modal */}
+            <AlertModal
+                isOpen={alertModal.isOpen}
+                onClose={() => setAlertModal(prev => ({ ...prev, isOpen: false }))}
+                title={alertModal.title}
+                message={alertModal.message}
+                type={alertModal.type}
+            />
         </div>
     );
 };
